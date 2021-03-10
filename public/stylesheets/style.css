@@ -1,5 +1,6 @@
 body {
   font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
 }
 
 a {
@@ -7,18 +8,19 @@ a {
 }
 
 .boxed {
-  width: 100%;
   padding:10px;
+  box-sizing: border-box;
 }
 .bottom {
   position: absolute;
   bottom: 10px;
   width: 90%;
 }
+/*
 .scrolling {
     overflow: scroll;
     max-height: 40vh;
-}
+}*/
 .outsideWrapper{
     width:256px; height:256px;
     margin:20px 60px;
