@@ -21,12 +21,20 @@ function initCanvas(sckt, imageUrl) {
     let ctx = cvx.getContext('2d');
     img.src = imageUrl;
 
+    // let w = canvas.width;
+    // let h = canvas.height;
+    //
+    // window.addEventListener('resize', function() {
+    //     canvas.width = w;
+    //     canvas.height = h;
+    // });
+
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
         prevX = currX;
         prevY = currY;
-        currX = e.clientX - canvas.position().left;
-        currY = e.clientY - canvas.position().top;
+        currX = e.clientX;
+        currY = e.clientY;
         if (e.type === 'mousedown') {
             flag = true;
         }
@@ -122,7 +130,14 @@ function drawImageScaled(img, canvas, ctx) {
  * @param thickness of the line
  */
 function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
-    //get the ration between the current canvas and the one it has been used to draw on the other comuter
+    // use .getBoundingClientRect() instead of .position() to enable correct drawings when page is resized.
+    prevX -= canvas.getBoundingClientRect().left;
+    prevY -= canvas.getBoundingClientRect().top;
+
+    currX -= canvas.getBoundingClientRect().left;
+    currY -= canvas.getBoundingClientRect().top;
+
+    //get the ration between the current canvas and the one it has been used to draw on the other computer
     let ratioX= canvas.width/canvasWidth;
     let ratioY= canvas.height/canvasHeight;
     // update the value of the points to draw
@@ -137,4 +152,6 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+
 }
+
