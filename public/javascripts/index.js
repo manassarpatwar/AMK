@@ -15,6 +15,7 @@ function init() {
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
+    initDatabase();
 }
 
 /**
@@ -72,8 +73,8 @@ function connectToRoom() {
     if (!name) name = 'Unknown-' + Math.random();
     // join the room
     chat.emit('create or join', roomNo, name);
-    initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
+    loadImage(roomNo, imageUrl, false).then(image => initCanvas(socket, image));
 }
 
 /**
@@ -102,4 +103,43 @@ function hideLoginInterface(room, userId) {
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
+}
+
+/**
+ * given a room, it queries the provided URL via Ajax to get the image via GET
+ * if the request fails, it shows the data stored in the database
+ * @param room
+ * @param imageUrl
+ * @param forceReload true if the data is to be retrieved from the server
+ */
+ async function loadImage(room, imageUrl, forceReload){
+    // there is no point in retrieving the data from the db if force reload is true:
+    // we should not do the following operation if forceReload is true
+    // there is room for improvement in this code
+
+    let cachedData = await getCachedData(room);
+    if (!forceReload && cachedData) {
+        console.log(cachedData);
+        const blob = cachedData.image;
+        const UrlCreator = window.URL || window.webkitURL;
+        imageUrl = UrlCreator.createObjectURL(blob);
+        return imageUrl
+    } 
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", imageUrl, true);
+    // Set the responseType to blob
+    xhr.responseType = "blob";
+    xhr.addEventListener("load", function () {
+        if (xhr.status === 200) {
+            console.log("Image retrieved");
+            // Blob as response
+            const blob = xhr.response;
+            // Put the received blob into IndexedDB
+            storeCachedData(room, blob)
+        }
+    }, false);
+    // Send XHR
+    xhr.send();
+
+    return imageUrl;
 }
