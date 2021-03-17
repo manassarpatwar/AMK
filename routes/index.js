@@ -6,4 +6,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Image Browsing' });
 });
 
+
+router.post('/', function(req, res, next) {
+  // var userData = req.body;
+  // console.log(userData);
+});
+
 module.exports = router;
