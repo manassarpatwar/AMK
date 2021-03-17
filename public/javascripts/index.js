@@ -13,7 +13,6 @@ function init() {
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
 
-    //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
     initChatSocket();
 }
 
@@ -25,6 +24,13 @@ function init() {
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('roomNo').value = 'R' + roomNo;
+
+    //form validation
+    var name = document.getElementById("name");
+    if(name.value) {
+        document.getElementById("connect_btn").disabled = false;
+        document.getElementById("validFormHelp").style.display = "none";
+    }
 }
 
 /**
@@ -46,7 +52,8 @@ function initChatSocket() {
     chat.on('chat', function (room, userId, chatText) {
         let who = userId
         if (userId === name) who = 'Me';
-        writeOnHistory('<b>' + who + ':</b> ' + chatText);
+        if (chatText !== "" && chatText!== null)
+            writeOnHistory('<b>' + who + ':</b> ' + chatText);
     });
 
 }
@@ -75,7 +82,21 @@ function connectToRoom() {
     initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
 }
-
+function validateForm() {
+    var name = document.forms["initial_form"]["name"].value;
+    var roomNo= document.forms["initial_form"]["roomNo"].value;
+    if (name  ==="" || roomNo ==="") {
+        document.getElementById("connect_btn").disabled = true;
+        console.log(document.getElementById("validFormHelp").innerText);
+        document.getElementById("validFormHelp").style.display = "block";
+        return false;
+    }
+    else{
+        document.getElementById("connect_btn").disabled = false;
+        document.getElementById("validFormHelp").style.display = "none";
+        return false;
+    }
+}
 /**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
