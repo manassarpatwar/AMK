@@ -7,9 +7,9 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/', function(req, res, next) {
+// router.post('/', function(req, res, next) {
   // var userData = req.body;
   // console.log(userData);
-});
+// });
 
 module.exports = router;
