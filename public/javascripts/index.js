@@ -24,13 +24,13 @@ function init() {
  */
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
-    document.getElementById('roomNo').value = 'R' + roomNo;
+    document.getElementById('room_no').value = 'R' + roomNo;
 
     //form validation
     var name = document.getElementById("name");
     if(name.value) {
         document.getElementById("connect_btn").disabled = false;
-        document.getElementById("validFormHelp").style.display = "none";
+        document.getElementById("valid_form_help").style.display = "none";
     }
 }
 
@@ -77,7 +77,7 @@ function sendChatText() {
  * interface
  */
 function connectToRoom() {
-    roomNo = document.getElementById('roomNo').value;
+    roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
@@ -88,15 +88,15 @@ function connectToRoom() {
 }
 
 function validateForm() {
-    let name = document.forms["initialForm"]["name"].value;
-    let roomNo= document.forms["initialForm"]["roomNo"].value;
+    let name = document.forms["initial_form"]["name"].value;
+    let roomNo= document.forms["initial_form"]["roomNo"].value;
     if (name  ==="" || roomNo ==="") {
         document.getElementById("connect_btn").disabled = true;
-        document.getElementById("validFormHelp").style.display = "block";
+        document.getElementById("valid_form_help").style.display = "block";
     }
     else{
         document.getElementById("connect_btn").disabled = false;
-        document.getElementById("validFormHelp").style.display = "none";
+        document.getElementById("valid_form_help").style.display = "none";
     }
 }
 function pressed(e) {
