@@ -1,3 +1,5 @@
+@import "WebRTC.css";
+
 body {
   margin: 0 auto !important;
   font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -50,9 +52,10 @@ a {
 }
 
 /*   index.js    */
-#addon_wrapping{
+.form-group .addon_wrapping{
     padding:0;
 }
+
 #valid_form_help{
     display: none;
 }
