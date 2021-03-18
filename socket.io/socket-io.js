@@ -25,28 +25,4 @@ exports.init = function(io) {
         } catch (e) {
         }
       });
-
-  // the news namespace
-  const news= io
-      .of('/frog')
-      .on('connection', function (socket) {
-        try {
-          /**
-           * it creates or joins a room
-           */
-          socket.on('create or join', function (room, userId) {
-            socket.join(room);
-            socket.broadcast.to(room).emit('joined', room, userId);
-          });
-
-          socket.on('frog', function (room, userId, chatText) {
-            socket.broadcast.to(room).emit('frog', room, userId, chatText);
-          });
-
-          socket.on('disconnect', function(){
-            console.log('someone disconnected');
-          });
-        } catch (e) {
-        }
-      });
 }

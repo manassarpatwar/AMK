@@ -13,7 +13,6 @@ function init() {
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
 
-    //@todo here is where you should initialise the socket operations as described in the lectures (room joining, chat message receipt etc.)
     initChatSocket();
     initDatabase();
 }
@@ -25,7 +24,14 @@ function init() {
  */
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
-    document.getElementById('roomNo').value = 'R' + roomNo;
+    document.getElementById('room_no').value = 'R' + roomNo;
+
+    //form validation
+    var name = document.getElementById("name");
+    if(name.value) {
+        document.getElementById("connect_btn").disabled = false;
+        document.getElementById("valid_form_help").style.display = "none";
+    }
 }
 
 /**
@@ -45,9 +51,13 @@ function initChatSocket() {
     });
     // called when a message is received
     chat.on('chat', function (room, userId, chatText) {
+        let time = new Date().toLocaleTimeString('en-US', { hour12: false,
+            hour: "numeric",
+            minute: "numeric"});
         let who = userId
         if (userId === name) who = 'Me';
-        writeOnHistory('<b>' + who + ':</b> ' + chatText);
+        if (chatText !== "" && chatText!== null)
+            writeOnHistory('<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>');
     });
 
 }
@@ -67,7 +77,7 @@ function sendChatText() {
  * interface
  */
 function connectToRoom() {
-    roomNo = document.getElementById('roomNo').value;
+    roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
@@ -75,6 +85,27 @@ function connectToRoom() {
     chat.emit('create or join', roomNo, name);
     hideLoginInterface(roomNo, name);
     loadImage(roomNo, imageUrl, false).then(image => initCanvas(socket, image));
+}
+
+function validateForm() {
+    let name = document.forms["initial_form"]["name"].value;
+    let roomNo= document.forms["initial_form"]["roomNo"].value;
+    if (name  ==="" || roomNo ==="") {
+        document.getElementById("connect_btn").disabled = true;
+        document.getElementById("valid_form_help").style.display = "block";
+    }
+    else{
+        document.getElementById("connect_btn").disabled = false;
+        document.getElementById("valid_form_help").style.display = "none";
+    }
+}
+function pressed(e) {
+    let key = e.keyCode || e.which;
+    if (key === 13){
+        console.log("Enter");
+        document.getElementById("chat_send").click();
+        e.preventDefault();
+    }
 }
 
 /**
