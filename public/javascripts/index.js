@@ -137,9 +137,17 @@ function hideLoginInterface(room, userId) {
     document.getElementById('in_room').innerHTML= ' '+room;
 }
 
+function hideImageUrlInput(){
+    imageUrl = document.getElementById('image_url');
+    if(imageUrl.style.display !== 'none'){
+        imageUrl.style.display = 'none';
+    }
+}
+
 function showImageUrlInput(){
     imageUrl = document.getElementById('image_url');
     if(imageUrl.style.display !== 'block'){
+        clearPreview();
         stopImageCapture();
         imageUrl.value = '';
         imageUrl.style.display = 'block';
@@ -162,8 +170,8 @@ function showImageUrlInput(){
     if (!forceReload && cachedData) {
         console.log(cachedData);
         const blob = cachedData.image;
-        const UrlCreator = window.URL || window.webkitURL;
-        imageUrl = UrlCreator.createObjectURL(blob);
+        const URLCreator = window.URL || window.webkitURL;
+        imageUrl = URLCreator.createObjectURL(blob);
         return imageUrl
     } 
     const xhr = new XMLHttpRequest();

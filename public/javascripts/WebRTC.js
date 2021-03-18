@@ -1,6 +1,7 @@
 
 function initWebRTC(){
     const fileInput = document.getElementById('file-input');
+
     fileInput.addEventListener('change', (e) => handleFile(e.target.files, output));
     const output = document.getElementById('output');
     const player = document.getElementById('player');
@@ -9,7 +10,7 @@ function initWebRTC(){
     const captureButton = document.getElementById('capture');
     const takePictureButton = document.getElementById('take-picture');
     const imageUrl = document.getElementById('image_url')
-
+    
     const constraints = {
         video: true,
     };
@@ -45,7 +46,6 @@ function initWebRTC(){
 
     function handleFile(fileList) {
         let file = null;
-    
         for (let i = 0; i < fileList.length; i++) {
             if (fileList[i].type.match(/^image\//)) {
                 file = fileList[i];
@@ -54,7 +54,16 @@ function initWebRTC(){
         }
     
         if (file !== null) {
-            imageUrl.value = URL.createObjectURL(file);
+            hideImageUrlInput();
+            canvas.style.display = 'block';
+            
+            const img = new Image;
+            img.onload = function(){
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+            const url = URL.createObjectURL(file);
+            imageUrl.value = url;
+            img.src = url;
         }
     }
 }
@@ -70,5 +79,9 @@ function stopImageCapture(){
         takePictureButton.style.display = 'inline-block';
         captureButton.style.display = 'none';
     }
-    
+}
+
+function clearPreview(){
+    const canvas = document.getElementById('preview-canvas');
+    canvas.style.display = 'none';
 }
