@@ -51,10 +51,13 @@ function initChatSocket() {
     });
     // called when a message is received
     chat.on('chat', function (room, userId, chatText) {
+        let time = new Date().toLocaleTimeString('en-US', { hour12: false,
+            hour: "numeric",
+            minute: "numeric"});
         let who = userId
         if (userId === name) who = 'Me';
         if (chatText !== "" && chatText!== null)
-            writeOnHistory('<b>' + who + ':</b> ' + chatText);
+            writeOnHistory('<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>');
     });
 
 }
@@ -83,21 +86,28 @@ function connectToRoom() {
     hideLoginInterface(roomNo, name);
     loadImage(roomNo, imageUrl, false).then(image => initCanvas(socket, image));
 }
+
 function validateForm() {
-    var name = document.forms["initial_form"]["name"].value;
-    var roomNo= document.forms["initial_form"]["roomNo"].value;
+    let name = document.forms["initialForm"]["name"].value;
+    let roomNo= document.forms["initialForm"]["roomNo"].value;
     if (name  ==="" || roomNo ==="") {
         document.getElementById("connect_btn").disabled = true;
-        console.log(document.getElementById("validFormHelp").innerText);
         document.getElementById("validFormHelp").style.display = "block";
-        return false;
     }
     else{
         document.getElementById("connect_btn").disabled = false;
         document.getElementById("validFormHelp").style.display = "none";
-        return false;
     }
 }
+function pressed(e) {
+    let key = e.keyCode || e.which;
+    if (key === 13){
+        console.log("Enter");
+        document.getElementById("chat_send").click();
+        e.preventDefault();
+    }
+}
+
 /**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)

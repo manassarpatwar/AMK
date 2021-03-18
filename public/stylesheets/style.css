@@ -53,6 +53,47 @@ a {
 #addon-wrapping{
     padding:0;
 }
-validFormHelp{
+#validFormHelp{
     display: none;
+}
+#input{
+    bottom: 0;
+    position: fixed;
+    min-width: 300px;
+    min-height: 5vw;
+    left: 50%;
+    transform: translateX(-50%);
+    width: inherit;
+    max-width: 1250px;
+}
+#input_wrapper{
+    height: 120px;
+    width: 100%;
+}
+.form{
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    display: block;
+}
+.container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+.time_left{
+    float:left;
+}
+#history{
+    min-height: 35vh;
+    max-height: 50vh;
+    overflow-y: scroll;
+    min-height:20vh;
 }
