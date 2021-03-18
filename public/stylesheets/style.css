@@ -52,11 +52,11 @@ a {
 }
 
 /*   index.js    */
-.form-group .addon-wrapping{
+.form-group .addon_wrapping{
     padding:0;
 }
 
-#validFormHelp{
+#valid_form_help{
     display: none;
 }
 #input{

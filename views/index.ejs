@@ -33,18 +33,18 @@
             <div id="initial_form" style="display: block">
                 <h1><%= title %></h1>
                 <p>Please insert the id of the room you want to join, if you do not have a room id, click Generate Room</p>
-                <form name="initialForm" onsubmit="return false;" onchange="validateForm()">
+                <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
                     <div class="form-group">
                         <label for="name">Your name*</label>
-                        <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="">
-                        <small id="nameHelp" class="form-text text-muted">We'll never share your name with anyone else.</small>
+                        <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
+                        <small id="name_help" class="form-text text-muted">We'll never share your name with anyone else.</small>
                     </div>
                     <div class="form-group">
                         <label for="roomNo">Your room*</label>
                         <div class="input-group flex-nowrap">
-                            <input name="roomNo" type="text" class="form-control" id="roomNo" placeholder="Enter the name of your room">
-                            <span class="input-group-text addon-wrapping">
-                                <button class="btn btn-dark" id="roomNoGenerator" onclick="generateRoom()">Generate Room</button>
+                            <input name="roomNo" type="text" class="form-control" id="room_no" placeholder="Enter the name of your room" required="true">
+                            <span class="input-group-text" id="addon_wrapping">
+                                <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate Room</button>
                             </span>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="connectToRoom()" class="btn btn-primary" value="Connect"/>
-                    <div id="validFormHelp">
+                    <div id="valid_form_help">
                         <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
                     </div>
                 </form>
@@ -83,10 +83,12 @@
                         <div id="who_you_are" style="display: inline" style="height: 10vh"></div>, you are in room: <div id="in_room" style="display: inline"></div>
                     </p>
                 </div>
+                <p>
                 <div style="width: 100%; max-height: 10vh">
                     <img id="image" height="100%" >
                     <canvas  id="canvas" ></canvas>
                 </div>
+                </p>
                 <br/>
                 <div style="min-height: 35vh" class="boxed" >
                     <div id="history" class="container">
@@ -94,7 +96,7 @@
                 </div>
                 <div id="input_wrapper">
                     <div id="input" class=" boxed">
-                        <form id="chatForm" onsubmit="return false;" style="width: 100%">
+                        <form id="chat_form" onsubmit="return false;" style="width: 100%">
                             <div class="input-group mb-3">
                                 <input onkeypress="pressed(event)" type="text" class="form-control" placeholder="" id="chat_input" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
