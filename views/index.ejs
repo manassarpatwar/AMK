@@ -33,31 +33,31 @@
             <div id="initial_form" style="display: block">
                 <h1><%= title %></h1>
                 <p>Please insert the id of the room you want to join, if you do not have a room id, click Generate Room</p>
-                    <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
-                        <div class="form-group">
-                            <label for="name">Your name*</label>
-                            <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
-                            <small id="name_help" class="form-text text-muted">We'll never share your name with anyone else.</small>
+                <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
+                    <div class="form-group">
+                        <label for="name">Your name*</label>
+                        <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
+                        <small id="name_help" class="form-text text-muted">We'll never share your name with anyone else.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomNo">Your room*</label>
+                        <div class="input-group flex-nowrap">
+                            <input name="roomNo" type="text" class="form-control" id="room_no" placeholder="Enter the name of your room" required="true">
+                            <span class="input-group-text" id="addon_wrapping">
+                                <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate Room</button>
+                            </span>
                         </div>
-                        <div class="form-group">
-                            <label for="roomNo">Your room*</label>
-                            <div class="input-group flex-nowrap">
-                                <input name="roomNo" type="text" class="form-control" id="room_no" placeholder="Enter the name of your room" required="true">
-                                <span class="input-group-text" id="addon_wrapping">
-                                    <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate Room</button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="image_url"> Image (URL) </label>
-                            <input type="text" class="form-control" id="image_url" name="image_url">
-                        </div>
-                        <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="connectToRoom()" class="btn btn-primary" value="Connect"/>
-                        <div id="valid_form_help">
-                            <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="image_url"> Image (URL) </label>
+                        <input type="text" class="form-control" id="image_url" name="image_url">
+                    </div>
+                    <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="connectToRoom()" class="btn btn-primary" value="Connect"/>
+                    <div id="valid_form_help">
+                        <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
+                    </div>
+                </form>
+            </div>
             <div id="chat_interface" style="display: none">
                 <div>
                     <p>
