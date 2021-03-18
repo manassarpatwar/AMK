@@ -22,9 +22,9 @@
         <meta name="msapplication-TileImage" content="images/icons/AMK-144x144.png">
         <meta name="msapplication-TileColor" content="#2F3BA2">
 
-        <script src="/javascripts/jquery.min.js"></script>
         <script src="/javascripts/index.js"></script>
         <script src="/javascripts/canvas.js"></script>
+        <script src="/javascripts/WebRTC.js"></script>
         <script src="/javascripts/database.js" type="module"></script>
 
     </head>
@@ -33,31 +33,50 @@
             <div id="initial_form" style="display: block">
                 <h1><%= title %></h1>
                 <p>Please insert the id of the room you want to join, if you do not have a room id, click Generate Room</p>
-                    <form name="initialForm" onsubmit="return false;" onchange="validateForm()">
-                        <div class="form-group">
-                            <label for="name">Your name*</label>
-                            <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
-                            <small id="nameHelp" class="form-text text-muted">We'll never share your name with anyone else.</small>
+                <form name="initialForm" onsubmit="return false;" onchange="validateForm()">
+                    <div class="form-group">
+                        <label for="name">Your name*</label>
+                        <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
+                        <small id="nameHelp" class="form-text text-muted">We'll never share your name with anyone else.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomNo">Your room*</label>
+                        <div class="input-group flex-nowrap">
+                            <input name="roomNo" type="text" class="form-control" id="roomNo" placeholder="Enter the name of your room" required="true">
+                            <span class="input-group-text addon-wrapping">
+                                <button class="btn btn-dark" id="roomNoGenerator" onclick="generateRoom()">Generate Room</button>
+                            </span>
                         </div>
-                        <div class="form-group">
-                            <label for="roomNo">Your room*</label>
-                            <div class="input-group flex-nowrap">
-                                <input name="roomNo" type="text" class="form-control" id="roomNo" placeholder="Enter the name of your room" required="true">
-                                <span class="input-group-text" id="addon-wrapping">
-                                    <button class="btn btn-dark" id="roomNoGenerator" onclick="generateRoom()">Generate Room</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="image_url"> Image </label>
+                        <div id='image-form'>
+                            <button id="enter-url" class="btn btn-dark mb-2" style='display: inline-block;' onclick="showImageUrlInput()">Enter URL</button>
+                            <label class = "image-file-label btn btn-dark">
+                                Browse <input type="file" accept="image/*" id="file-input" capture="environment" style='display: none;'>
+                            </label>
+                            <button id="take-picture" class="btn btn-dark mb-2" style='display: inline-block;'>Take Picture</button>
+                            <button id="capture" class="btn btn-dark mb-2" style='display: none;'>Capture</button>
+                            <div id="image-url-group" style="display: flex">
+                                <input type="text" class="form-control" id="image_url" name="image-url" >
+                                <span class="input-group-text addon-wrapping">
+                                    <button class="btn btn-dark p-1" id="submit-image-url" onclick="submitImageUrl()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                                        </svg>
+                                    </button>
                                 </span>
                             </div>
+                            <video id="player" style='display: none;'></video>
+                            <canvas id="preview-canvas" width=320 height=240 style='display: none;'></canvas>
                         </div>
-                        <div class="form-group">
-                            <label for="image_url"> Image (URL) </label>
-                            <input type="text" class="form-control" id="image_url" name="image_url">
-                        </div>
-                        <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="connectToRoom()" class="btn btn-primary" value="Connect"/>
-                        <div id="validFormHelp">
-                            <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="connectToRoom()" class="btn btn-primary" value="Connect"/>
+                    <div id="validFormHelp">
+                        <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
+                    </div>
+                </form>
+            </div>
             <div id="chat_interface" style="display: none">
                 <div>
                     <p>

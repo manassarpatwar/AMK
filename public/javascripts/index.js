@@ -15,6 +15,7 @@ function init() {
 
     initChatSocket();
     initDatabase();
+    initWebRTC();
 }
 
 /**
@@ -84,7 +85,7 @@ function connectToRoom() {
     // join the room
     chat.emit('create or join', roomNo, name);
     hideLoginInterface(roomNo, name);
-    loadImage(roomNo, imageUrl, false).then(image => initCanvas(socket, image));
+    loadImageUrl(roomNo, imageUrl, false).then(imageUrl => initCanvas(socket, imageUrl));
 }
 
 function validateForm() {
@@ -136,6 +137,15 @@ function hideLoginInterface(room, userId) {
     document.getElementById('in_room').innerHTML= ' '+room;
 }
 
+function showImageUrlInput(){
+    imageUrl = document.getElementById('image_url');
+    if(imageUrl.style.display !== 'block'){
+        stopImageCapture();
+        imageUrl.value = '';
+        imageUrl.style.display = 'block';
+    }
+}
+
 /**
  * given a room, it queries the provided URL via Ajax to get the image via GET
  * if the request fails, it shows the data stored in the database
@@ -143,7 +153,7 @@ function hideLoginInterface(room, userId) {
  * @param imageUrl
  * @param forceReload true if the data is to be retrieved from the server
  */
- async function loadImage(room, imageUrl, forceReload){
+ async function loadImageUrl(room, imageUrl, forceReload){
     // there is no point in retrieving the data from the db if force reload is true:
     // we should not do the following operation if forceReload is true
     // there is room for improvement in this code
