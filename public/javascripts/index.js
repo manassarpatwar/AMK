@@ -136,39 +136,36 @@ function hideLoginInterface(room, userId) {
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
 }
+
 function submitUrl(){
+    imageUrlField = document.getElementById('image_url_field');
     imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-    let canvas = document.getElementById('preview-canvas');
+    let canvas = document.getElementById('preview_canvas');
     let context = canvas.getContext('2d');
     let img = new Image();
-    img.src = imageUrl.value;
+    img.src = imageUrlField.value;
     img.onload = function() {
-        var scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
         // get the top left position of the image
-        var x = (canvas.width / 2) - (img.width / 2) * scale;
-        var y = (canvas.height / 2) - (img.height / 2) * scale;
+        const x = (canvas.width / 2) - (img.width / 2) * scale;
+        const y = (canvas.height / 2) - (img.height / 2) * scale;
         context.drawImage(img, x, y, img.width * scale, img.height * scale);
         canvas.style.display= 'block';
     }
+    imageUrl.value = imageUrlField.value;
 }
 function hideImageUrlInput(){
-    imageUrl = document.getElementById('image_url');
-    let submitImageUrl = document.getElementById('submit-image-url');
-    if(imageUrl.style.display !== 'none'){
-        imageUrl.style.display = 'none';
-        submitImageUrl.style.display = 'none';
-    }
+    imageUrlGroup = document.getElementById('image_url_group');
+    imageUrlGroup.style.display = 'none';
 }
+
 function showImageUrlInput(){
-    imageUrl = document.getElementById('image_url');
-    submitImageUrl = document.getElementById('submit-image-url');
-    if(imageUrl.style.display !== 'block'){
-        stopImageCapture();
-        imageUrl.value = '';
-        imageUrl.style.display = 'block';
-        submitImageUrl.style.display = 'block';
-    }
+    imageUrlField = document.getElementById('image_url_field');
+    imageUrlGroup = document.getElementById('image_url_group');
+    stopImageCapture();
+    clearPreview(imageUrlField.value);
+    imageUrlGroup.style.display = 'flex';
 }
 
 /**
