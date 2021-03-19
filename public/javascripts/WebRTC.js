@@ -1,14 +1,14 @@
 
 function initWebRTC(){
-    const fileInput = document.getElementById('file-input');
+    const fileInput = document.getElementById('file_input');
 
     fileInput.addEventListener('change', (e) => handleFile(e.target.files, output));
     const output = document.getElementById('output');
     const player = document.getElementById('player');
-    const canvas = document.getElementById('preview-canvas');
+    const canvas = document.getElementById('preview_canvas');
     const ctx = canvas.getContext('2d');
     const captureButton = document.getElementById('capture');
-    const takePictureButton = document.getElementById('take-picture');
+    const takePictureButton = document.getElementById('take_picture');
     const imageUrl = document.getElementById('image_url')
     
     const constraints = {
@@ -30,6 +30,8 @@ function initWebRTC(){
         takePictureButton.style.display = 'none';
         captureButton.style.display = 'inline-block';
         imageUrl.style.display = 'none';
+
+        hideImageUrlInput();
     });
 
     captureButton.addEventListener('click', () => {
@@ -71,7 +73,7 @@ function initWebRTC(){
 function stopImageCapture(){
     const player = document.getElementById('player');
     const captureButton = document.getElementById('capture');
-    const takePictureButton = document.getElementById('take-picture');
+    const takePictureButton = document.getElementById('take_picture');
 
     if(player.srcObject !== null){
         player.srcObject.getVideoTracks().forEach(track => track.stop());
@@ -81,7 +83,17 @@ function stopImageCapture(){
     }
 }
 
-function clearPreview(){
-    const canvas = document.getElementById('preview-canvas');
-    canvas.style.display = 'none';
+function clearPreview(imageUrl){
+    const canvas = document.getElementById('preview_canvas');
+    if(imageUrl === ""){
+        canvas.style.display = 'none';
+    }else{
+        canvas.style.display = 'block';
+            
+        const img = new Image;
+        img.onload = function(){
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        img.src = imageUrl;
+    }
 }
