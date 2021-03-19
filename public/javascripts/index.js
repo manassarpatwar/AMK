@@ -81,6 +81,7 @@ function connectToRoom() {
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
     let imageUrl= document.getElementById('image_url').value;
+    console.log(imageUrl);
     if (!name) name = 'Unknown-' + Math.random();
     // join the room
     chat.emit('create or join', roomNo, name);
@@ -90,7 +91,7 @@ function connectToRoom() {
 
 function validateForm() {
     let name = document.forms["initial_form"]["name"].value;
-    let roomNo= document.forms["initial_form"]["roomNo"].value;
+    let roomNo= document.forms["initial_form"]["room_no"].value;
     if (name  ==="" || roomNo ==="") {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
