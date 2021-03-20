@@ -80,13 +80,13 @@ function sendChatText() {
 function connectToRoom() {
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
+    const imageBase64 = document.getElementById('image_base_64');
     console.log(imageUrl);
     if (!name) name = 'Unknown-' + Math.random();
     // join the room
     chat.emit('create or join', roomNo, name);
     hideLoginInterface(roomNo, name);
-    loadImageUrl(roomNo, imageUrl, false).then(imageUrl => initCanvas(socket, imageUrl));
+    loadImageUrl(roomNo, {url: imageBase64.getAttribute("url"), base64: imageBase64.value}, false).then(imageUrl => initCanvas(socket, imageUrl));
 }
 
 function validateForm() {
@@ -139,58 +139,13 @@ function hideLoginInterface(room, userId) {
 }
 
 function submitUrl(){
-    imageUrlField = document.getElementById('image_url_field');
+    imageBase64 = document.getElementById('image_base_64');
     imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-    let canvas = document.getElementById('preview_canvas');
-    let context = canvas.getContext('2d');
-    let img = new Image();
-    img.src = imageUrlField.value;
-    img.onload = function() {
-        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-        // get the top left position of the image
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
-        context.drawImage(img, x, y, img.width * scale, img.height * scale);
-        canvas.style.display= 'block';
-    }
-    imageUrl.value = imageUrlField.value;
-}
-function hideImageUrlInput(){
-    imageUrlGroup = document.getElementById('image_url_group');
-    imageUrlGroup.style.display = 'none';
-}
+  
 
-function showImageUrlInput(){
-    imageUrlField = document.getElementById('image_url_field');
-    imageUrlGroup = document.getElementById('image_url_group');
-    stopImageCapture();
-    clearPreview(imageUrlField.value);
-    imageUrlGroup.style.display = 'flex';
-}
-
-/**
- * given a room, it queries the provided URL via Ajax to get the image via GET
- * if the request fails, it shows the data stored in the database
- * @param room
- * @param imageUrl
- * @param forceReload true if the data is to be retrieved from the server
- */
- async function loadImageUrl(room, imageUrl, forceReload){
-    // there is no point in retrieving the data from the db if force reload is true:
-    // we should not do the following operation if forceReload is true
-    // there is room for improvement in this code
-
-    let cachedData = await getCachedData(room);
-    if (!forceReload && cachedData) {
-        console.log(cachedData);
-        const blob = cachedData.image;
-        const URLCreator = window.URL || window.webkitURL;
-        imageUrl = URLCreator.createObjectURL(blob);
-        return imageUrl
-    } 
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", imageUrl, true);
+    xhr.open("GET", imageUrl.value, true);
     // Set the responseType to blob
     xhr.responseType = "blob";
     xhr.addEventListener("load", function () {
@@ -198,12 +153,65 @@ function showImageUrlInput(){
             console.log("Image retrieved");
             // Blob as response
             const blob = xhr.response;
-            // Put the received blob into IndexedDB
-            storeCachedData(room, blob)
+            // Convert blob to base 64
+            convertToBase64(blob).then(data => {
+                const base64 = data.result;
+                imageBase64.value = base64;
+                imageBase64.setAttribute("url", imageUrl.value);
+                preview(base64);
+            });
         }
     }, false);
+
     // Send XHR
     xhr.send();
+}
 
-    return imageUrl;
+function hideImageUrlInput(){
+    imageUrlGroup = document.getElementById('image_url_group');
+    imageUrlGroup.style.display = 'none';
+}
+
+function showImageUrlInput(){
+    imageUrl = document.getElementById('image_url');
+    imageUrlGroup = document.getElementById('image_url_group');
+    stopImageCapture();
+    clearPreview(imageUrl.value);
+    imageUrlGroup.style.display = 'flex';
+}
+
+/**
+ * given a room, it queries the provided URL via Ajax to get the image via GET
+ * if the request fails, it shows the data stored in the database
+ * @param room
+ * @param imageBase64
+ * @param forceReload true if the data is to be retrieved from the server
+ */
+ async function loadImageUrl(room, data, forceReload){
+    // there is no point in retrieving the data from the db if force reload is true:
+    // we should not do the following operation if forceReload is true
+    // there is room for improvement in this code
+
+    let cachedData = await getCachedData(room);
+    if (!forceReload && cachedData) {
+        return cachedData.base64;
+    }
+
+    storeCachedData(data)
+
+    return data.base64;
+}
+
+function convertToBase64(blob){
+    return new Promise(function(resolve, reject){
+        const fileReader = new FileReader();
+        fileReader.addEventListener("load", function(e){
+            resolve({
+                result: e.target.result,
+                error: e.target.error,
+            })
+        });
+        fileReader.readAsDataURL(blob);
+    })
+  
 }

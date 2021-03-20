@@ -32,7 +32,7 @@ window.initDatabase= initDatabase;
  * @param room
  * @param image
  */
-async function storeCachedData(room, image) {
+async function storeCachedData(room, data) {
     console.log('inserting: ');
     if (!db)
         await initDatabase();
@@ -40,7 +40,7 @@ async function storeCachedData(room, image) {
         try{
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
-            await store.put({room, image});
+            await store.put({room: data});
             await tx.complete;
             console.log('added item to the store! ');
         } catch(error) {
