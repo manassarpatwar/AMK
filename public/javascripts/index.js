@@ -73,24 +73,38 @@ function sendChatText() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
-function connectToRoom(room, user) {
+async function connectToRoom(room, user) {
+    // first is saves the images and data in the database and then it moves to different route
     if (typeof room === 'undefined' || typeof user === 'undefined' ) {
+        await saveData();
         room = document.getElementById('room_no').value;
-        name = document.getElementById('name').value;
-        location.assign('/chat/'+room+'/'+name);
-        let imageUrl = document.getElementById('image_url').value;
+        name = document.getElementById('name').value
         if (!name) name = 'Unknown-' + Math.random();
+        location.assign('/chat/'+room+'/'+name);
     }
-    else{
+    else {
         roomNo = room;
         name = user;
     }
     // join the room
     chat.emit('create or join', roomNo, name);
-    hideLoginInterface(roomNo, name);
-    if (typeof imageUrl !== 'undefined')
-        loadImageUrl(roomNo, imageUrl, false).then(imageUrl => initCanvas(socket, imageUrl));
+    let imageUrl = 0;
+    loadImageUrl(roomNo, imageUrl, false).then(imageUrl => initCanvas(socket, imageUrl));
+    console.log(imageUrl);
 }
+
+async function saveData() {
+    roomNo = document.getElementById('room_no').value;
+    name = document.getElementById('name').value;
+    let imageUrl= document.getElementById('image_url').value;
+    console.log(imageUrl);
+    if (!name) name = 'Unknown-' + Math.random();
+    // join the room
+    chat.emit('create or join', roomNo, name);
+    await loadImageUrl(roomNo, imageUrl, false);
+    return "done";
+}
+
 /**
  * used to validate whether all required fields are present (user and room number)
  *
