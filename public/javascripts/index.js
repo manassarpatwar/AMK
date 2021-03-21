@@ -98,15 +98,14 @@ function connectToRoom(room, user) {
 }
 
 function createRoom() {
+    const anonymous = document.getElementById('checkAnonymous');
     // first is saves the images and data in the database and then it moves to different route
-    if (typeof room === 'undefined' || typeof user === 'undefined' ) {
-        roomNo = document.getElementById('room_no').value;
-        name = document.getElementById('name').value
-        if (!name) name = 'Unknown-' + Math.random();
-        const imageBase64 = document.getElementById('image_base_64');
-        const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
-        storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
-    }
+    roomNo = document.getElementById('room_no').value;
+    name = document.getElementById('name').value
+    if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
+    const imageBase64 = document.getElementById('image_base_64');
+    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
+    storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
 }
 
 /**
@@ -114,9 +113,13 @@ function createRoom() {
  *
  */
 function validateForm() {
-    let name = document.forms["initial_form"]["name"].value;
-    let roomNo= document.forms["initial_form"]["room_no"].value;
-    if (name  ==="" || roomNo ==="") {
+    let name = document.getElementById('name').value;
+    let roomNo= document.getElementById('room_no').value
+    const anonymous = document.getElementById('checkAnonymous');
+    if (anonymous.checked){
+        document.getElementById('name').value = "";
+    }
+    if (roomNo  ==="" || (name ==="" && !anonymous.checked)) {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
     }
@@ -148,7 +151,7 @@ function formatChatText({who, chatText, time}){
  */
 function writeOnHistory(text) {
     if (text==='') return;
-    let history = document.getElementById('history');
+    const history = document.getElementById('history');
     let paragraph = document.createElement('p');
     paragraph.innerHTML = text;
     history.appendChild(paragraph);

@@ -10,7 +10,6 @@ async function swapImage() {
     console.log("done");
     // I need to call the function which saves the new image to the database
     await loadImageUrl(room, imageUrl, false);
-    if (!name) name = 'Unknown-' + Math.random();
+    if (!name) name = 'Anonymous' + parseInt((Math.random()*1000),10);
     location.assign('/chat/'+room+'/'+name);
-
 }
