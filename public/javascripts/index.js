@@ -16,8 +16,14 @@ function init(room, user) {
     initDatabase();
     initWebRTC();
     //it connects to a room when someone open the link or refresh the page (init for chat.ejs)
-    if (typeof room !== 'undefined' && typeof user !=='undefined')
+    if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
+        getCachedData(room).then(cachedData => {
+            if(cachedData.history){
+                cachedData.history.forEach(entry => writeOnHistory(formatChatText(entry)));
+            }
+        })
+    }
 }
 
 /**
@@ -53,8 +59,16 @@ function initChatSocket() {
             minute: "numeric"});
         let who = userId
         if (userId === name) who = 'Me';
-        if (chatText !== "" && chatText!== null)
-            writeOnHistory('<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>');
+        if (chatText !== "" && chatText!== null){
+            writeOnHistory(formatChatText({who, chatText, time}));
+            getCachedData(room).then(cachedData => {
+                console.log(cachedData);
+                const history = cachedData.history || [];
+                history.push({who, chatText, time});
+                cachedData.history = history;
+                updateCachedData(cachedData);
+            })
+        }
     });
 
 }
@@ -73,36 +87,25 @@ function sendChatText() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
-async function connectToRoom(room, user) {
-    // first is saves the images and data in the database and then it moves to different route
-    if (typeof room === 'undefined' || typeof user === 'undefined' ) {
-        await saveData();
-        room = document.getElementById('room_no').value;
-        name = document.getElementById('name').value
-        if (!name) name = 'Unknown-' + Math.random();
-        location.assign('/chat/'+room+'/'+name);
-    }
-    else {
-        roomNo = room;
-        name = user;
-    }
+function connectToRoom(room, user) {
+    roomNo = room;
+    name = user;
     // join the room
     chat.emit('create or join', roomNo, name);
-    let imageUrl = 0;
-    loadImageUrl(roomNo, imageUrl, false).then(imageUrl => initCanvas(socket, imageUrl));
-    console.log(imageUrl);
+    getCachedData(room).then(cachedData => {
+        initCanvas(socket, cachedData.image.base64)
+    });
 }
 
-async function saveData() {
+function createRoom() {
+    const anonymous = document.getElementById('checkAnonymous');
+    // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
-    name = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
-    console.log(imageUrl);
-    if (!name) name = 'Unknown-' + Math.random();
-    // join the room
-    chat.emit('create or join', roomNo, name);
-    await loadImageUrl(roomNo, imageUrl, false);
-    return "done";
+    name = document.getElementById('name').value
+    if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
+    const imageBase64 = document.getElementById('image_base_64');
+    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
+    storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
 }
 
 /**
@@ -110,9 +113,13 @@ async function saveData() {
  *
  */
 function validateForm() {
-    let name = document.forms["initial_form"]["name"].value;
-    let roomNo= document.forms["initial_form"]["room_no"].value;
-    if (name  ==="" || roomNo ==="") {
+    let name = document.getElementById('name').value;
+    let roomNo= document.getElementById('room_no').value
+    const anonymous = document.getElementById('checkAnonymous');
+    if (anonymous.checked){
+        document.getElementById('name').value = "";
+    }
+    if (roomNo  ==="" || (name ==="" && !anonymous.checked)) {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
     }
@@ -133,6 +140,10 @@ function pressed(e) {
     }
 }
 
+function formatChatText({who, chatText, time}){
+    return '<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>';
+}
+
 /**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
@@ -140,7 +151,7 @@ function pressed(e) {
  */
 function writeOnHistory(text) {
     if (text==='') return;
-    let history = document.getElementById('history');
+    const history = document.getElementById('history');
     let paragraph = document.createElement('p');
     paragraph.innerHTML = text;
     history.appendChild(paragraph);
@@ -166,58 +177,13 @@ function hideLoginInterface(room, userId) {
 }
 
 function submitUrl(){
-    imageUrlField = document.getElementById('image_url_field');
+    imageBase64 = document.getElementById('image_base_64');
     imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-    let canvas = document.getElementById('preview_canvas');
-    let context = canvas.getContext('2d');
-    let img = new Image();
-    img.src = imageUrlField.value;
-    img.onload = function() {
-        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-        // get the top left position of the image
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
-        context.drawImage(img, x, y, img.width * scale, img.height * scale);
-        canvas.style.display= 'block';
-    }
-    imageUrl.value = imageUrlField.value;
-}
-function hideImageUrlInput(){
-    imageUrlGroup = document.getElementById('image_url_group');
-    imageUrlGroup.style.display = 'none';
-}
-
-function showImageUrlInput(){
-    imageUrlField = document.getElementById('image_url_field');
-    imageUrlGroup = document.getElementById('image_url_group');
-    stopImageCapture();
-    clearPreview(imageUrlField.value);
-    imageUrlGroup.style.display = 'flex';
-}
-
-/**
- * given a room, it queries the provided URL via Ajax to get the image via GET
- * if the request fails, it shows the data stored in the database
- * @param room
- * @param imageUrl
- * @param forceReload true if the data is to be retrieved from the server
- */
- async function loadImageUrl(room, imageUrl, forceReload){
-    // there is no point in retrieving the data from the db if force reload is true:
-    // we should not do the following operation if forceReload is true
-    // there is room for improvement in this code
-
-    let cachedData = await getCachedData(room);
-    if (!forceReload && cachedData) {
-        console.log(cachedData);
-        const blob = cachedData.image;
-        const URLCreator = window.URL || window.webkitURL;
-        imageUrl = URLCreator.createObjectURL(blob);
-        return imageUrl
-    } 
+  
+    
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", imageUrl, true);
+    xhr.open("GET", imageUrl.value, true);
     // Set the responseType to blob
     xhr.responseType = "blob";
     xhr.addEventListener("load", function () {
@@ -225,12 +191,44 @@ function showImageUrlInput(){
             console.log("Image retrieved");
             // Blob as response
             const blob = xhr.response;
-            // Put the received blob into IndexedDB
-            storeCachedData(room, blob)
+            // Convert blob to base 64
+            convertToBase64(blob).then(data => {
+                const base64 = data.result;
+                console.log(base64);
+                imageBase64.value = base64;
+                imageBase64.setAttribute("url", imageUrl.value);
+                preview(base64);
+            });
         }
     }, false);
+
     // Send XHR
     xhr.send();
+}
 
-    return imageUrl;
+function hideImageUrlInput(){
+    imageUrlGroup = document.getElementById('image_url_group');
+    imageUrlGroup.style.display = 'none';
+}
+
+function showImageUrlInput(){
+    imageUrl = document.getElementById('image_url');
+    imageUrlGroup = document.getElementById('image_url_group');
+    stopImageCapture();
+    clearPreview(imageUrl.value);
+    imageUrlGroup.style.display = 'flex';
+}
+
+function convertToBase64(blob){
+    return new Promise(function(resolve, reject){
+        const fileReader = new FileReader();
+        fileReader.addEventListener("load", function(e){
+            resolve({
+                result: e.target.result,
+                error: e.target.error,
+            })
+        });
+        fileReader.readAsDataURL(blob);
+    })
+  
 }

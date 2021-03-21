@@ -11,7 +11,7 @@ router.post('/chat/k/k', function(req, res, next) {
 });
 
 /* GET chat page. */
-router.all('/chat/:room/:user', function(req, res, next) {
+router.get('/chat/:room/:user', function(req, res, next) {
   var room = req.params.room;
   console.log('all');
   var user = req.params.user;

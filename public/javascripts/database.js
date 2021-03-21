@@ -19,7 +19,7 @@ async function initDatabase(){
                         keyPath: 'id',
                         autoIncrement: true
                     });
-                    AMK_DB.createIndex('room', 'room', {unique: false});
+                    AMK_DB.createIndex('room', 'room', {unique: true});
                 }
             }
         });
@@ -28,11 +28,11 @@ async function initDatabase(){
 }
 window.initDatabase= initDatabase;
 /**
- * it saves the image of a room in localStorage
+ * it saves the data of a room in localStorage
  * @param room
  * @param image
  */
-async function storeCachedData(room, image) {
+async function storeCachedData(room, data, callback) {
     console.log('inserting: ');
     if (!db)
         await initDatabase();
@@ -40,19 +40,23 @@ async function storeCachedData(room, image) {
         try{
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
-            await store.put({room, image});
+            await store.put({room, ...data});
             await tx.complete;
             console.log('added item to the store! ');
+            if(callback){
+                callback();
+            }
         } catch(error) {
-            localStorage.setItem(room, JSON.stringify(image));
+            console.log(error);
+            localStorage.setItem(room, JSON.stringify(data));
         };
     }
-    else localStorage.setItem(room, JSON.stringify(image));
+    else localStorage.setItem(room, JSON.stringify(data));
 }
 window.storeCachedData= storeCachedData;
 
 /**
- * it retrieves the image stored for the specific room from the database
+ * it retrieves the data stored for the specific room from the database
  * @param room
  * @returns {*}
  */
@@ -78,3 +82,28 @@ async function getCachedData(room) {
     }
 }
 window.getCachedData= getCachedData;
+
+/**
+ * it updates the data of a room in localStorage
+ * @param room
+ * @param image
+ */
+ async function updateCachedData(data) {
+    console.log('inserting: ');
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try{
+            let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
+            let store = await tx.objectStore(IMAGE_STORE_NAME);
+            await store.put(data);
+            await tx.complete;
+            console.log('added item to the store! ');
+        } catch(error) {
+            console.log(error);
+            localStorage.setItem(room, JSON.stringify(data));
+        };
+    }
+    else localStorage.setItem(room, JSON.stringify(data));
+}
+window.updateCachedData= updateCachedData;

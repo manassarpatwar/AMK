@@ -1,14 +1,14 @@
 <div class="form-group">
-    <label for="image_url_value"> Image </label>
+    <label for="image_url_value"> Add image </label>
     <div id='image-form'>
-        <button id="enter_url" class="btn btn-dark mb-2" style='display: inline-block;' onclick="showImageUrlInput()">Enter URL</button>
+        <button id="enter_url" class="btn btn-dark mb-2" style='display: inline-block;' onclick="showImageUrlInput()">URL</button>
         <label class = "image-file-label btn btn-dark">
-            Browse <input type="file" onclick="hideImageUrlInput()"accept="image/*" id="file_input" capture="environment" style='display: none;'>
+            Browse <input type="file" accept="image/*" id="file_input" capture="environment" style='display: none;'>
         </label>
         <button id="take_picture" class="btn btn-dark mb-2" style='display: inline-block;'>Take Picture</button>
         <button id="capture" class="btn btn-dark mb-2" style='display: none;'>Capture</button>
-        <div id="image_url_group" style="display: none">
-            <input type="text" class="form-control" id="image_url_field" name="image_url_field">
+        <div id="image_url_group" style="display: none; width: 50%;">
+            <input type="text" class="form-control" id="image_url" name="image_url">
             <span class="input-group-text addon-wrapping p-0">
                 <button class="btn btn-dark p-1" id="submit_image_url" onclick="submitUrl()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
@@ -19,5 +19,5 @@
         <video id="player" style='display: none;'></video>
         <canvas id="preview_canvas" width=320 height=240 style='display: none;'></canvas>
     </div>
-    <input type="text" class="form-control" id="image_url" name="image_url" style='display: none;'>
+    <input type="text" url="" class="form-control" id="image_base_64" name="image_base_64" style='display: none;'>
 </div>

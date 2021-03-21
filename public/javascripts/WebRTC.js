@@ -9,7 +9,8 @@ function initWebRTC(){
     const ctx = canvas.getContext('2d');
     const captureButton = document.getElementById('capture');
     const takePictureButton = document.getElementById('take_picture');
-    const imageUrl = document.getElementById('image_url')
+    const imageUrl = document.getElementById('image_url');
+    const imageBase64 = document.getElementById('image_base_64');
     
     const constraints = {
         video: true,
@@ -43,7 +44,8 @@ function initWebRTC(){
         captureButton.style.display = 'none';
         canvas.style.display = 'block';
 
-        imageUrl.value = canvas.toDataURL();
+        imageBase64.value = canvas.toDataURL();
+        imageBase64.setAttribute("url", "");
     });
 
     function handleFile(fileList) {
@@ -56,16 +58,16 @@ function initWebRTC(){
         }
     
         if (file !== null) {
+            stopImageCapture();
             hideImageUrlInput();
             canvas.style.display = 'block';
-            
-            const img = new Image;
-            img.onload = function(){
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            }
-            const url = URL.createObjectURL(file);
-            imageUrl.value = url;
-            img.src = url;
+
+            convertToBase64(file).then(data => {
+                const base64 = data.result;
+                imageBase64.value = base64;
+                imageBase64.setAttribute("url", "");
+                preview(base64);
+            });
         }
     }
 }
@@ -90,10 +92,26 @@ function clearPreview(imageUrl){
     }else{
         canvas.style.display = 'block';
             
-        const img = new Image;
+        const img = new Image();
         img.onload = function(){
             canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
         }
         img.src = imageUrl;
+    }
+}
+
+function preview(base64){
+    let canvas = document.getElementById('preview_canvas');
+    let ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = base64;
+    img.onload = function(){
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        // get the top left position of the image
+        const x = (canvas.width / 2) - (img.width / 2) * scale;
+        const y = (canvas.height / 2) - (img.height / 2) * scale;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        canvas.style.display= 'block';
     }
 }
