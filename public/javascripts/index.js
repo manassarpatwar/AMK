@@ -199,28 +199,6 @@ function showImageUrlInput(){
     imageUrlGroup.style.display = 'flex';
 }
 
-/**
- * given a room, it queries the provided URL via Ajax to get the image via GET
- * if the request fails, it shows the data stored in the database
- * @param room
- * @param imageBase64
- * @param forceReload true if the data is to be retrieved from the server
- */
- async function loadImageUrl(room, data, forceReload){
-    // there is no point in retrieving the data from the db if force reload is true:
-    // we should not do the following operation if forceReload is true
-    // there is room for improvement in this code
-
-    let cachedData = await getCachedData(room);
-    if (!forceReload && cachedData) {
-        return cachedData.base64;
-    }
-    console.log(data);
-    storeCachedData(room, data)
-
-    return data.base64;
-}
-
 function convertToBase64(blob){
     return new Promise(function(resolve, reject){
         const fileReader = new FileReader();
