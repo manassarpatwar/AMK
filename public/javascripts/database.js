@@ -40,7 +40,7 @@ async function storeCachedData(room, data) {
         try{
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
-            await store.put({room: data});
+            await store.put({room, data});
             await tx.complete;
             console.log('added item to the store! ');
         } catch(error) {

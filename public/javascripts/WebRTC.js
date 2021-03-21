@@ -102,7 +102,7 @@ function clearPreview(imageUrl){
 
 function preview(base64){
     let canvas = document.getElementById('preview_canvas');
-    let context = canvas.getContext('2d');
+    let ctx = canvas.getContext('2d');
     const img = new Image();
     img.src = base64;
     img.onload = function(){
@@ -110,7 +110,8 @@ function preview(base64){
         // get the top left position of the image
         const x = (canvas.width / 2) - (img.width / 2) * scale;
         const y = (canvas.height / 2) - (img.height / 2) * scale;
-        canvas.getContext('2d').drawImage(img, x, y, img.width * scale, img.height * scale);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
         canvas.style.display= 'block';
     }
 }

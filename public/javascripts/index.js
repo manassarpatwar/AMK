@@ -81,7 +81,6 @@ function connectToRoom() {
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
     const imageBase64 = document.getElementById('image_base_64');
-    console.log(imageUrl);
     if (!name) name = 'Unknown-' + Math.random();
     // join the room
     chat.emit('create or join', roomNo, name);
@@ -143,7 +142,7 @@ function submitUrl(){
     imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
   
-
+    
     const xhr = new XMLHttpRequest();
     xhr.open("GET", imageUrl.value, true);
     // Set the responseType to blob
@@ -156,6 +155,7 @@ function submitUrl(){
             // Convert blob to base 64
             convertToBase64(blob).then(data => {
                 const base64 = data.result;
+                console.log(base64);
                 imageBase64.value = base64;
                 imageBase64.setAttribute("url", imageUrl.value);
                 preview(base64);
@@ -197,7 +197,7 @@ function showImageUrlInput(){
         return cachedData.base64;
     }
 
-    storeCachedData(data)
+    storeCachedData(room, data)
 
     return data.base64;
 }
