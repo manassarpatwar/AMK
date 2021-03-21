@@ -41,7 +41,7 @@ async function storeCachedData(room, data, callback) {
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
             await store.put({room, ...data});
-            await tx.complete;
+            await tx.done;
             console.log('added item to the store! ');
             if(callback){
                 callback();
@@ -70,7 +70,7 @@ async function getCachedData(room) {
             let store = await tx.objectStore(IMAGE_STORE_NAME);
             let index = await store.index('room');
             let roomData = await index.get(IDBKeyRange.only(room));
-            await tx.complete;
+            await tx.done;
             return roomData
         } catch (error) {
             console.log(error);
@@ -87,8 +87,9 @@ window.getCachedData= getCachedData;
  * it updates the data of a room in localStorage
  * @param room
  * @param image
+ * @param callback
  */
- async function updateCachedData(data) {
+ async function updateCachedData(room, data, callback) {
     console.log('inserting: ');
     if (!db)
         await initDatabase();
@@ -96,14 +97,21 @@ window.getCachedData= getCachedData;
         try{
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
-            await store.put(data);
-            await tx.complete;
-            console.log('added item to the store! ');
+            let index = await store.index('room');
+            let roomData = await index.get(IDBKeyRange.only(room));
+            roomData.image = data;
+            await store.put(roomData);
+            await tx.done;
+            console.log('updated item to the store! ');
+            if(callback){
+                callback();
+            }
         } catch(error) {
             console.log(error);
             localStorage.setItem(room, JSON.stringify(data));
         };
     }
     else localStorage.setItem(room, JSON.stringify(data));
+    console.log("Done");
 }
 window.updateCachedData= updateCachedData;

@@ -128,6 +128,7 @@ function validateForm() {
         document.getElementById("valid_form_help").style.display = "none";
     }
 }
+
 /**
  * it enables a pressed key 'enter' sends a message
  * @param e: event listener
