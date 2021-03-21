@@ -5,17 +5,19 @@ let chat= io.connect('/chat');
 
 /**
  * called by <body onload>
- * it initialises the interface and the expected socket messages
+ * it initialises the interface,the expected socket messages, WebRTC, Database
  * plus the associated actions
+ * @param room: room
+ * @param user: username
  */
-function init() {
+function init(room, user) {
     // it sets up the interface so that userId and room are selected
-    document.getElementById('initial_form').style.display = 'block';
-    document.getElementById('chat_interface').style.display = 'none';
-
     initChatSocket();
     initDatabase();
     initWebRTC();
+    //it connects to a room when someone open the link or refresh the page (init for chat.ejs)
+    if (typeof room !== 'undefined' && typeof user !=='undefined')
+        connectToRoom(room, user);
 }
 
 /**
@@ -27,18 +29,12 @@ function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('room_no').value = 'R' + roomNo;
 
-    //form validation
-    var name = document.getElementById("name");
-    if(name.value) {
-        document.getElementById("connect_btn").disabled = false;
-        document.getElementById("valid_form_help").style.display = "none";
-    }
+    validateForm()
 }
 
 /**
- * it initialises the socket for /chat
+ * it initialises the socket for /chat/:roomNo/:user
  */
-
 function initChatSocket() {
     // called when someone joins the room. If it is someone else it notifies the joining of the room
     chat.on('joined', function (room, userId) {
@@ -65,7 +61,7 @@ function initChatSocket() {
 
 /**
  * called when the Send button is pressed. It gets the text to send from the interface
- * and sends the message via  socket
+ * and sends the message via socket
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
@@ -77,17 +73,33 @@ function sendChatText() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
-function connectToRoom() {
-    roomNo = document.getElementById('room_no').value;
-    name = document.getElementById('name').value;
-    const imageBase64 = document.getElementById('image_base_64');
-    if (!name) name = 'Unknown-' + Math.random();
+function connectToRoom(room, user) {
+    roomNo = room;
+    name = user;
     // join the room
     chat.emit('create or join', roomNo, name);
-    hideLoginInterface(roomNo, name);
-    loadImageUrl(roomNo, {url: imageBase64.getAttribute("url"), base64: imageBase64.value}, false).then(imageUrl => initCanvas(socket, imageUrl));
+    getCachedData(room).then(cachedData => {
+        initCanvas(socket, cachedData.data.base64)
+    });
 }
 
+async function createRoom() {
+    // first is saves the images and data in the database and then it moves to different route
+    if (typeof room === 'undefined' || typeof user === 'undefined' ) {
+        roomNo = document.getElementById('room_no').value;
+        name = document.getElementById('name').value
+        if (!name) name = 'Unknown-' + Math.random();
+        const imageBase64 = document.getElementById('image_base_64');
+        const data = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
+        await storeCachedData(roomNo, data)
+        location.assign('/chat/'+roomNo+'/'+name);
+    }
+}
+
+/**
+ * used to validate whether all required fields are present (user and room number)
+ *
+ */
 function validateForm() {
     let name = document.forms["initial_form"]["name"].value;
     let roomNo= document.forms["initial_form"]["room_no"].value;
@@ -100,10 +112,13 @@ function validateForm() {
         document.getElementById("valid_form_help").style.display = "none";
     }
 }
+/**
+ * it enables a pressed key 'enter' sends a message
+ * @param e: event listener
+ */
 function pressed(e) {
     let key = e.keyCode || e.which;
     if (key === 13){
-        console.log("Enter");
         document.getElementById("chat_send").click();
         e.preventDefault();
     }
@@ -131,10 +146,14 @@ function writeOnHistory(text) {
  * @param userId the user name
  */
 function hideLoginInterface(room, userId) {
-    document.getElementById('initial_form').style.display = 'none';
-    document.getElementById('chat_interface').style.display = 'block';
-    document.getElementById('who_you_are').innerHTML= userId;
-    document.getElementById('in_room').innerHTML= ' '+room;
+    if(document.getElementById('initial_form')) {
+        document.getElementById('initial_form').style.display = 'none';
+    }
+    else{
+        document.getElementById('chat_interface').style.display = 'block';
+        document.getElementById('who_you_are').innerHTML = userId;
+        document.getElementById('in_room').innerHTML = ' ' + room;
+    }
 }
 
 function submitUrl(){
@@ -196,7 +215,7 @@ function showImageUrlInput(){
     if (!forceReload && cachedData) {
         return cachedData.base64;
     }
-
+    console.log(data);
     storeCachedData(room, data)
 
     return data.base64;

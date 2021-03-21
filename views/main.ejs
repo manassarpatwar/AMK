@@ -1,0 +1,25 @@
+<div id="wrapper">
+    <div id="initial_form" style="display: block">
+        <h1><%= title %></h1>
+        <p>Please insert the id of the room you want to join, if you do not have a room id, click Generate Room</p>
+        <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
+            <div class="form-group">
+                <label for="name">Your name*</label>
+                <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="" required="true">
+                <small id="name_help" class="form-text text-muted">We'll never share your name with anyone else.</small>
+            </div>
+            <div class="form-group">
+                <label for="room_no">Your room*</label>
+                <div class="input-group flex-nowrap">
+                    <input name="room_no" type="text" class="form-control" id="room_no" placeholder="Enter the name of your room" required="true">
+                    <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate Room</button>
+                </div>
+            </div>
+            <%- include("imageForm") %>
+            <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="createRoom()" class="btn btn-primary" value="Connect"/>
+            <div id="valid_form_help">
+                <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
+            </div>
+        </form>
+    </div>
+</div>
