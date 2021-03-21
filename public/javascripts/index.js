@@ -16,8 +16,14 @@ function init(room, user) {
     initDatabase();
     initWebRTC();
     //it connects to a room when someone open the link or refresh the page (init for chat.ejs)
-    if (typeof room !== 'undefined' && typeof user !=='undefined')
+    if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
+        getCachedData(room).then(cachedData => {
+            if(cachedData.history){
+                cachedData.history.forEach(entry => writeOnHistory(formatChatText(entry)));
+            }
+        })
+    }
 }
 
 /**
@@ -53,8 +59,16 @@ function initChatSocket() {
             minute: "numeric"});
         let who = userId
         if (userId === name) who = 'Me';
-        if (chatText !== "" && chatText!== null)
-            writeOnHistory('<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>');
+        if (chatText !== "" && chatText!== null){
+            writeOnHistory(formatChatText({who, chatText, time}));
+            getCachedData(room).then(cachedData => {
+                console.log(cachedData);
+                const history = cachedData.history || [];
+                history.push({who, chatText, time});
+                cachedData.history = history;
+                updateCachedData(cachedData);
+            })
+        }
     });
 
 }
@@ -79,20 +93,19 @@ function connectToRoom(room, user) {
     // join the room
     chat.emit('create or join', roomNo, name);
     getCachedData(room).then(cachedData => {
-        initCanvas(socket, cachedData.data.base64)
+        initCanvas(socket, cachedData.image.base64)
     });
 }
 
-async function createRoom() {
+function createRoom() {
     // first is saves the images and data in the database and then it moves to different route
     if (typeof room === 'undefined' || typeof user === 'undefined' ) {
         roomNo = document.getElementById('room_no').value;
         name = document.getElementById('name').value
         if (!name) name = 'Unknown-' + Math.random();
         const imageBase64 = document.getElementById('image_base_64');
-        const data = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
-        await storeCachedData(roomNo, data)
-        location.assign('/chat/'+roomNo+'/'+name);
+        const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
+        storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
     }
 }
 
@@ -122,6 +135,10 @@ function pressed(e) {
         document.getElementById("chat_send").click();
         e.preventDefault();
     }
+}
+
+function formatChatText({who, chatText, time}){
+    return '<b>' + who + ':</b> ' + chatText + '<br/><small class="form-text text-muted"> ' + time+ '<small>';
 }
 
 /**
