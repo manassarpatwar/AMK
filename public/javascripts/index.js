@@ -105,7 +105,7 @@ function createRoom() {
     if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
     const imageBase64 = document.getElementById('image_base_64');
     const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
-    storeCachedData(roomNo, {image}).then(location.assign('/chat/'+roomNo+'/'+name));
+    storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
 }
 
 /**
