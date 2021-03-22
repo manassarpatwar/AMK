@@ -32,7 +32,7 @@ window.initDatabase= initDatabase;
  * @param room
  * @param image
  */
-async function storeCachedData(room, data, callback) {
+async function storeCachedData(room, data) {
     console.log('inserting: ');
     if (!db)
         await initDatabase();
@@ -43,11 +43,7 @@ async function storeCachedData(room, data, callback) {
             await store.put({room, ...data});
             await tx.done;
             console.log('added item to the store! ');
-            if(callback){
-                callback();
-            }
         } catch(error) {
-            console.log(error);
             localStorage.setItem(room, JSON.stringify(data));
         };
     }
