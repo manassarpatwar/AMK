@@ -182,17 +182,13 @@ function submitUrl(){
     imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
   
-    
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", imageUrl.value, true);
-    // Set the responseType to blob
-    xhr.responseType = "blob";
-    xhr.addEventListener("load", function () {
-        if (xhr.status === 200) {
-            console.log("Image retrieved");
-            // Blob as response
-            const blob = xhr.response;
-            // Convert blob to base 64
+    $.ajax({
+        url: imageUrl.value,
+        cache: false,
+        xhrFields:{
+            responseType: 'blob'
+        },
+        success: function(blob){
             convertToBase64(blob).then(data => {
                 const base64 = data.result;
                 console.log(base64);
@@ -200,11 +196,11 @@ function submitUrl(){
                 imageBase64.setAttribute("url", imageUrl.value);
                 preview(base64);
             });
+        },
+        error:function(){
+            
         }
-    }, false);
-
-    // Send XHR
-    xhr.send();
+    });
 }
 
 function hideImageUrlInput(){
