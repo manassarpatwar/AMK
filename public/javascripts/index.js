@@ -1,6 +1,6 @@
 let name = null;
 let roomNo = null;
-let socket=null;
+let socket = null;
 let chat= io.connect('/chat');
 
 /**
@@ -93,7 +93,7 @@ function connectToRoom(room, user) {
     // join the room
     chat.emit('create or join', roomNo, name);
     getCachedData(room).then(cachedData => {
-        initCanvas(socket, cachedData.image.base64)
+        initCanvas(chat, cachedData.image.base64, roomNo, name);
     });
 }
 

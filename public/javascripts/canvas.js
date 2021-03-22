@@ -1,8 +1,6 @@
 /**
  * this file contains the functions to control the drawing on the canvas
  */
-let room;
-let userId;
 let color = 'red', thickness = 4;
 
 /**
@@ -11,8 +9,10 @@ let color = 'red', thickness = 4;
  * @param sckt the open socket to register events on
  * @param imageUrl teh image url to download
  */
-function initCanvas(sckt, imageUrl) {
+function initCanvas(sckt, imageUrl, room, userId) {
+    console.log('socket', sckt);
     socket = sckt;
+
     let flag = false,
         prevX, prevY, currX, currY = 0;
     let canvas = $('#canvas');
@@ -45,26 +45,27 @@ function initCanvas(sckt, imageUrl) {
         if (e.type === 'mousemove') {
             if (flag) {
                 drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                // @todo if you draw on the canvas, you may want to let everyone know via socket.io (socket.emit...)  by sending them
-                // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
-            }
+                // when user draws on the canvas, let everyone know via socket.io
+                socket.emit('draw', setData(room, userId, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness)
+                )};
         }
     });
 
-    // this is code left in case you need to  provide a button clearing the canvas (it is suggested that you implement it)
-    $('.canvas-clear').on('click', function (e) {
-        let c_width = canvas.width();
-        let c_height = canvas.height();
-        ctx.clearRect(0, 0, c_width, c_height);
-        // @todo if you clear the canvas, you want to let everyone know via socket.io (socket.emit...)
-
+    // this is code to  provide a button clearing the canvas (it is suggested that you implement it)
+    $('#canvas_clear').on('click', function (e) {
+        console.log("cleared");
+        let canvasWidth = canvas.width;
+        let canvasHeight = canvas.height;
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        //update canvas for all users via socket.io
+        setData(room, userId, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness);
     });
 
-    // @todo here you want to capture the event on the socket when someone else is drawing on their canvas (socket.on...)
-    // I suggest that you receive userId, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness
-    // and then you call
-    //     let ctx = canvas[0].getContext('2d');
-    //     drawOnCanvas(ctx, canvasWidth, canvasHeight, x1, y21, x2, y2, color, thickness)
+    //capture the event on the socket when someone else is drawing on their canvas
+    socket.on('draw', function(data) {
+        let ctx = canvas[0].getContext('2d');
+        drawOnCanvas(ctx, data.canvasWidth, data.canvasHeight, data.prevX, data.prevY, data.currX, data.currY, data.color, data.thickness)
+    });
 
     // this is called when the src of the image is loaded
     // this is an async operation as it may take time
@@ -94,10 +95,39 @@ function initCanvas(sckt, imageUrl) {
         }, 10);
     });
 }
+/**
+ * called when it is required to set data object which is later send to socket.io
+ * @param ctx the canvas context
+ * @param canvasWidth the originating canvas width
+ * @param canvasHeight the originating canvas height
+ * @param prevX the starting X coordinate
+ * @param prevY the starting Y coordinate
+ * @param currX the ending X coordinate
+ * @param currY the ending Y coordinate
+ * @param color of the line
+ * @param thickness of the line
+ * @return data
+ */
+function setData(room, userId, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness){
+    let data = {
+        room: room,
+        userId: userId,
+        ctx: ctx,
+        canvasWidth: canvasWidth,
+        canvasHeight: canvasHeight,
+        prevX: prevX,
+        prevY: prevY,
+        currX: currX,
+        currY: currY,
+        color: color,
+        thickness: thickness,
+    }
+    return data;
+}
 
 /**
  * called when it is required to draw the image on the canvas. We have resized the canvas to the same image size
- * so ti is simpler to draw later
+ * so it is simpler to draw later
  * @param img
  * @param canvas
  * @param ctx
@@ -110,10 +140,7 @@ function drawImageScaled(img, canvas, ctx) {
     let x = (canvas.width / 2) - (img.width / 2) * scale;
     let y = (canvas.height / 2) - (img.height / 2) * scale;
     ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-
 }
-
 
 /**
  * this is called when we want to display what we (or any other connected via socket.io) draws on the canvas
@@ -152,6 +179,4 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
-
 }
-

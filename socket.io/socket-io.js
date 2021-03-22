@@ -1,5 +1,3 @@
-
-
 exports.init = function(io) {
 
   // the chat namespace
@@ -17,6 +15,10 @@ exports.init = function(io) {
 
           socket.on('chat', function (room, userId, chatText) {
             chat.to(room).emit('chat', room, userId, chatText);
+          });
+
+          socket.on('draw', function(data) {
+              chat.to(data.room).emit('draw', data)
           });
 
           socket.on('disconnect', function(){
