@@ -85,11 +85,9 @@ window.getCachedData= getCachedData;
 
 /**
  * it updates the data of a room in localStorage
- * @param room
  * @param image
- * @param callback
  */
- async function updateCachedData(room, data, callback) {
+async function updateCachedData(data) {
     console.log('inserting: ');
     if (!db)
         await initDatabase();
@@ -97,21 +95,15 @@ window.getCachedData= getCachedData;
         try{
             let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
-            let index = await store.index('room');
-            let roomData = await index.get(IDBKeyRange.only(room));
-            roomData.image = data;
-            await store.put(roomData);
-            await tx.done;
-            console.log('updated item to the store! ');
-            if(callback){
-                callback();
-            }
+            await store.put(data);
+            await tx.complete;
+            console.log('added item to the store! ');
         } catch(error) {
             console.log(error);
             localStorage.setItem(room, JSON.stringify(data));
         };
     }
     else localStorage.setItem(room, JSON.stringify(data));
-    console.log("Done");
 }
+
 window.updateCachedData= updateCachedData;
