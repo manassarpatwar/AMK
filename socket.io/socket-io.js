@@ -21,6 +21,9 @@ exports.init = function(io) {
               chat.to(data.room).emit('draw', data)
           });
 
+          socket.on('clear', function(room, canvas) {
+            chat.to(room).emit('clear', canvas)
+          });
           socket.on('disconnect', function(){
             console.log('someone disconnected');
           });

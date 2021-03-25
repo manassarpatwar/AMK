@@ -15,10 +15,9 @@ function initCanvas(sckt, imageUrl, room, userId) {
 
     let flag = false,
         prevX, prevY, currX, currY = 0;
-    let canvas = $('#canvas');
-    let cvx = document.getElementById('canvas');
+    let canvas = document.getElementById('canvas');
     let img = document.getElementById('image');
-    let ctx = cvx.getContext('2d');
+    let ctx = canvas.getContext('2d');
     img.src = imageUrl;
 
     // let w = canvas.width;
@@ -30,7 +29,7 @@ function initCanvas(sckt, imageUrl, room, userId) {
     // });
 
     // event on the canvas when the mouse is on it
-    canvas.on('mousemove mousedown mouseup mouseout', function (e) {
+    $('#canvas').on('mousemove mousedown mouseup mouseout', function (e) {
         let absolutePosition = getAbsoluteCoordinates();
         prevX = currX;
         prevY = currY;
@@ -55,16 +54,20 @@ function initCanvas(sckt, imageUrl, room, userId) {
     // this is code to  provide a button clearing the canvas (it is suggested that you implement it)
     $('#canvas_clear').on('click', function (e) {
         console.log("cleared");
-        let canvasWidth = canvas.width;
-        let canvasHeight = canvas.height;
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        socket.emit('clear', room);
+       // ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0,0, canvas.width, canvas.height);
         //update canvas for all users via socket.io
-        setData(room, userId, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness);
     });
 
+    socket.on('clear', function(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0,0, canvas.width, canvas.height);
+    });
     //capture the event on the socket when someone else is drawing on their canvas
     socket.on('draw', function(data) {
-        let ctx = canvas[0].getContext('2d');
+        let ctx = canvas.getContext('2d');
         drawOnCanvas(ctx, data.canvasWidth, data.canvasHeight, data.prevX, data.prevY, data.currX, data.currY, data.color, data.thickness)
     });
 
@@ -86,10 +89,10 @@ function initCanvas(sckt, imageUrl, room, userId) {
                     ratioY= img.clientHeight/window.innerHeight;
                 let ratio= Math.min(ratioX, ratioY);
                 // resize the canvas to fit the screen and the image
-                cvx.width = canvas.width = img.clientWidth*ratio;
-                cvx.height = canvas.height = img.clientHeight*ratio;
+                canvas.width = canvas.width = img.clientWidth*ratio;
+                canvas.height = canvas.height = img.clientHeight*ratio;
                 // draw the image onto the canvas
-                drawImageScaled(img, cvx, ctx);
+                drawImageScaled(img, canvas, ctx);
                 // hide the image element as it is not needed
                 img.style.display = 'none';
             }
