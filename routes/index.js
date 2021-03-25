@@ -13,7 +13,6 @@ router.post('/chat/k/k', function(req, res, next) {
 /* GET chat page. */
 router.get('/chat/:room/:user', function(req, res, next) {
   var room = req.params.room;
-  console.log(d);
   var user = req.params.user;
   res.render('chat', { room: room, user: user, title: 'Chat'});
 });
