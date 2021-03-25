@@ -18,12 +18,16 @@ exports.init = function(io) {
           });
 
           socket.on('draw', function(data) {
-              chat.to(data.room).emit('draw', data)
+            chat.to(data.room).emit('draw', data)
           });
 
           socket.on('sendUrl', function(room, url) {
-                chat.to(room).emit('sendUrl', url)
-            });
+            chat.to(room).emit('sendUrl', room, url)
+          });
+
+          socket.on('swapped', function(room) {
+            chat.to(room).emit('swapped', room)
+          });
 
           socket.on('clear', function(room, canvas) {
             chat.to(room).emit('clear', canvas)

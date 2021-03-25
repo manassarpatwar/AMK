@@ -7,7 +7,7 @@ function inputImage(){
 }
 
 function swapImage(roomNo, name) {
-    //chat.emit('chat', roomNo, name, "I just swapped an image. Please save all you need and refresh a page to see a new image.");
+    inputImage();
     const imageUrl = document.getElementById('image_url');
     if (imageUrl.value) {
         console.log("image url", imageUrl.value);
@@ -20,7 +20,8 @@ function swapImage(roomNo, name) {
         getCachedData(roomNo).then(data => {
             data.image = newImage;
             updateCachedData(data);
-        }).then(location.assign('/chat/'+roomNo+'/'+name));
+        });
+        chat.emit('swapped', roomNo);
     }
 }
 
@@ -32,4 +33,11 @@ chat.on('sendUrl', function(){
         data.image = newImage;
         updateCachedData(data);
     })
+    writeOnHistory('<b>' + 'The image has been swapped.' + '</b>' + ' Please save all you need and refresh a page to see a new image. ');
+});
+
+chat.on('swapped', function(){
+    writeOnHistory('<b>' + 'The image has been swapped.' + '</b>' + ' Please save all you need and refresh a page to see a new image. ');
+    // alert("The image has been swapped. Please save all you need and refresh a page to see a new image.");
+
 });
