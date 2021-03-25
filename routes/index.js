@@ -8,9 +8,9 @@ router.get('/', function(req, res, next) {
 
 /* GET chat page. */
 router.get('/chat/:room/:user', function(req, res, next) {
-  var room = req.params.room;
-  var user = req.params.user;
-  res.render('chat', { room: room, user: user, title: 'Chat'});
+  let room = req.params.room;
+  let user = req.params.user;
+  res.render('chat', { title: 'Chat', room: room, user: user});
 });
 
 /* GET chat page. */
