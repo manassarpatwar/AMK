@@ -6,7 +6,7 @@ function inputImage(){
         imageForm.style.display = 'block';
 }
 
-async function swapImage(roomNo, name) {
+function swapImage(roomNo, name) {
     //chat.emit('chat', roomNo, name, "I just swapped an image. Please save all you need and refresh a page to see a new image.");
     const imageUrl = document.getElementById('image_url');
     if (imageUrl.value) {
