@@ -31,10 +31,11 @@ function initCanvas(sckt, imageUrl, room, userId) {
 
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function (e) {
+        let absolutePosition = getAbsoluteCoordinates();
         prevX = currX;
         prevY = currY;
-        currX = e.clientX;
-        currY = e.clientY;
+        currX = e.clientX - absolutePosition[0];
+        currY = e.clientY - absolutePosition[1];
         if (e.type === 'mousedown') {
             flag = true;
         }
@@ -157,12 +158,6 @@ function drawImageScaled(img, canvas, ctx) {
  * @param thickness of the line
  */
 function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
-    // use .getBoundingClientRect() instead of .position() to enable correct drawings when page is resized.
-    prevX -= canvas.getBoundingClientRect().left;
-    prevY -= canvas.getBoundingClientRect().top;
-
-    currX -= canvas.getBoundingClientRect().left;
-    currY -= canvas.getBoundingClientRect().top;
 
     //get the ration between the current canvas and the one it has been used to draw on the other computer
     let ratioX= canvas.width/canvasWidth;
@@ -179,4 +174,9 @@ function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY
     ctx.lineWidth = thickness;
     ctx.stroke();
     ctx.closePath();
+}
+
+function getAbsoluteCoordinates(){
+    // use .getBoundingClientRect() instead of .position() to enable correct drawings when page is resized.
+    return [canvas.getBoundingClientRect().left, canvas.getBoundingClientRect().top];
 }
