@@ -178,8 +178,8 @@ function hideLoginInterface(room, userId) {
 }
 
 function submitUrl(){
-    imageBase64 = document.getElementById('image_base_64');
-    imageUrl = document.getElementById('image_url');
+    const imageBase64 = document.getElementById('image_base_64');
+    const imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
   
     
