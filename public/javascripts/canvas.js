@@ -121,6 +121,8 @@ class Canvas{
 
     draw(e){
         e.preventDefault()
+        if(e.touches){ e = e.touches[0]}
+
         this.prev = {x: this.curr.x, y: this.curr.y};
         const abs = this.getAbsoluteCanvasCoordiates()
         this.curr.x = e.clientX - abs.left
