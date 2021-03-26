@@ -1,182 +1,157 @@
-/**
- * this file contains the functions to control the drawing on the canvas
- */
-let color = 'red', thickness = 4;
+class Canvas{
+    constructor(socket, imageUrl, roomNo){
+        this.socket = socket
+        this.imageUrl = imageUrl
+        this.roomNo = roomNo
 
-/**
- * it inits the image canvas to draw on. It sets up the events to respond to (click, mouse on, etc.)
- * it is also the place where the data should be sent  via socket.io
- * @param sckt the open socket to register events on
- * @param imageUrl teh image url to download
- */
-function initCanvas(sckt, imageUrl, room, userId) {
-    console.log('socket', sckt);
-    socket = sckt;
+        this.canvas = document.getElementById('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.background = document.getElementById('image');
+        
+        this.drawingBoard = document.getElementById('drawing_board');
 
-    let flag = false,
-        prevX, prevY, currX, currY = 0;
-    let canvas = $('#canvas');
-    let cvx = document.getElementById('canvas');
-    let img = document.getElementById('image');
-    let ctx = cvx.getContext('2d');
-    img.src = imageUrl;
+        this.canvas.width = window.innerWidth*0.25;
+        this.canvas.height = window.innerHeight*0.25;
+        this.color = 'red';
+        this.thickness = 4;
 
-    // let w = canvas.width;
-    // let h = canvas.height;
-    //
-    // window.addEventListener('resize', function() {
-    //     canvas.width = w;
-    //     canvas.height = h;
-    // });
+        this.background.style.width = null;
+        this.background.style.height = null;
+        this.background.src = imageUrl;
+        const loadImageUrl = this.loadImageUrl.bind(this);
+        this.background.onload = function(){loadImageUrl(this)};
 
-    // event on the canvas when the mouse is on it
-    canvas.on('mousemove mousedown mouseup mouseout', function (e) {
-        let absolutePosition = getAbsoluteCoordinates();
-        prevX = currX;
-        prevY = currY;
-        currX = e.clientX - absolutePosition[0];
-        currY = e.clientY - absolutePosition[1];
-        if (e.type === 'mousedown') {
-            flag = true;
-        }
-        if (e.type === 'mouseup' || e.type === 'mouseout') {
-            flag = false;
-        }
-        // if the flag is up, the movement of the mouse draws on the canvas
-        if (e.type === 'mousemove') {
-            if (flag) {
-                drawOnCanvas(ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness);
-                // when user draws on the canvas, let everyone know via socket.io
-                socket.emit('draw', setData(room, userId, ctx, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness)
-                )};
-        }
-    });
+        this.interacting = false;
+        this.prev = {x: 0, y: 0}
+        this.curr = {x: 0, y: 0}
+        this.canvas.addEventListener('mousedown', e => {this.startDraw(e)});
+        this.canvas.addEventListener('touchstart', e => {this.startDraw(e)});
+        this.canvas.addEventListener('mouseup', e => {this.endDraw(e)});
+        this.canvas.addEventListener('touchend', e => {this.endDraw(e)});
+        this.canvas.addEventListener('mousemove', e => {this.draw(e)});
+        this.canvas.addEventListener('touchmove', e => {this.draw(e)});
 
-    // this is code to  provide a button clearing the canvas (it is suggested that you implement it)
-    $('#canvas_clear').on('click', function (e) {
-        console.log("cleared");
-        let canvasWidth = canvas.width;
-        let canvasHeight = canvas.height;
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        //update canvas for all users via socket.io
-        setData(room, userId, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness);
-    });
+        $('#canvas_clear').on('click', e => {this.clear(e)})
 
-    //capture the event on the socket when someone else is drawing on their canvas
-    socket.on('draw', function(data) {
-        let ctx = canvas[0].getContext('2d');
-        drawOnCanvas(ctx, data.canvasWidth, data.canvasHeight, data.prevX, data.prevY, data.currX, data.currY, data.color, data.thickness)
-    });
+        const getScaledCoordinates = this.getScaledCoordinates.bind(this);
+        const drawStroke = this.drawStroke.bind(this);
 
-    // this is called when the src of the image is loaded
-    // this is an async operation as it may take time
-    img.addEventListener('load', () => {
-        // it takes time before the image size is computed and made available
-        // here we wait until the height is set, then we resize the canvas based on the size of the image
-        let poll = setInterval(function () {
-            if (img.naturalHeight) {
-                clearInterval(poll);
-                // resize the canvas
-                let ratioX=1;
-                let ratioY=1;
-                // if the screen is smaller than the img size we have to reduce the image to fit
-                if (img.clientWidth>window.innerWidth)
-                    ratioX=window.innerWidth/img.clientWidth;
-                if (img.clientHeight> window.innerHeight)
-                    ratioY= img.clientHeight/window.innerHeight;
-                let ratio= Math.min(ratioX, ratioY);
-                // resize the canvas to fit the screen and the image
-                cvx.width = canvas.width = img.clientWidth*ratio;
-                cvx.height = canvas.height = img.clientHeight*ratio;
-                // draw the image onto the canvas
-                drawImageScaled(img, cvx, ctx);
-                // hide the image element as it is not needed
-                img.style.display = 'none';
+        getCachedData(roomNo).then(cachedData => {
+            if(cachedData.annotations && cachedData.annotations.length > 0){
+                for(const annotation of cachedData.annotations){
+                    for(const stroke of annotation){
+                        const {scaledPrev, scaledCurr} = getScaledCoordinates(stroke.normPrev, stroke.normCurr);
+                        drawStroke(scaledPrev, scaledCurr)
+                    }
+                }
             }
-        }, 10);
-    });
-}
-/**
- * called when it is required to set data object which is later send to socket.io
- * @param ctx the canvas context
- * @param canvasWidth the originating canvas width
- * @param canvasHeight the originating canvas height
- * @param prevX the starting X coordinate
- * @param prevY the starting Y coordinate
- * @param currX the ending X coordinate
- * @param currY the ending Y coordinate
- * @param color of the line
- * @param thickness of the line
- * @return data
- */
-function setData(room, userId, ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness){
-    let data = {
-        room: room,
-        userId: userId,
-        ctx: ctx,
-        canvasWidth: canvasWidth,
-        canvasHeight: canvasHeight,
-        prevX: prevX,
-        prevY: prevY,
-        currX: currX,
-        currY: currY,
-        color: color,
-        thickness: thickness,
+        })
+
+        this.strokes = [];
+        
+        socket.on('draw', function(data){
+            const {scaledPrev, scaledCurr} = getScaledCoordinates(data.normPrev, data.normCurr);
+            drawStroke(scaledPrev, scaledCurr);
+        })
     }
-    return data;
-}
 
-/**
- * called when it is required to draw the image on the canvas. We have resized the canvas to the same image size
- * so it is simpler to draw later
- * @param img
- * @param canvas
- * @param ctx
- */
-function drawImageScaled(img, canvas, ctx) {
-    // get the scale
-    let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-    // get the top left position of the image
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let x = (canvas.width / 2) - (img.width / 2) * scale;
-    let y = (canvas.height / 2) - (img.height / 2) * scale;
-    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-}
+    getAbsoluteCanvasCoordiates(){
+        return {left: this.canvas.getBoundingClientRect().left, top: this.canvas.getBoundingClientRect().top};
+    }
 
-/**
- * this is called when we want to display what we (or any other connected via socket.io) draws on the canvas
- * note that as the remote provider can have a different canvas size (e.g. their browser window is larger)
- * we have to know what their canvas size is so to map the coordinates
- * @param ctx the canvas context
- * @param canvasWidth the originating canvas width
- * @param canvasHeight the originating canvas height
- * @param prevX the starting X coordinate
- * @param prevY the starting Y coordinate
- * @param currX the ending X coordinate
- * @param currY the ending Y coordinate
- * @param color of the line
- * @param thickness of the line
- */
-function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
+    startDraw(e){
+        e.preventDefault()
+        if(e.touches){ e = e.touches[0]}
+        this.interacting = true;
+        this.prev = this.curr;
+        const abs = this.getAbsoluteCanvasCoordiates()
+        this.curr.x = e.clientX - abs.left
+        this.curr.y = e.clientY - abs.top
+    }
 
-    //get the ration between the current canvas and the one it has been used to draw on the other computer
-    let ratioX= canvas.width/canvasWidth;
-    let ratioY= canvas.height/canvasHeight;
-    // update the value of the points to draw
-    prevX*=ratioX;
-    prevY*=ratioY;
-    currX*=ratioX;
-    currY*=ratioY;
-    ctx.beginPath();
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(currX, currY);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = thickness;
-    ctx.stroke();
-    ctx.closePath();
-}
+    endDraw(e){
+        e.preventDefault()
+        this.interacting = false;
+        getCachedData(this.roomNo).then(cachedData => {
+            const annotations = cachedData.annotations || []
+            annotations.push(this.strokes)
+            cachedData.annotations = annotations
+            updateCachedData(cachedData);
+            this.strokes = []
+        })
+    }
 
-function getAbsoluteCoordinates(){
-    // use .getBoundingClientRect() instead of .position() to enable correct drawings when page is resized.
-    return [canvas.getBoundingClientRect().left, canvas.getBoundingClientRect().top];
+
+    clear(){
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    getNormalizedCoordinates(){
+        const normPrev =  {x: this.prev.x/this.canvas.width, y: this.prev.y/this.canvas.height};
+        const normCurr =  {x: this.curr.x/this.canvas.width, y: this.curr.y/this.canvas.height};
+        return {normPrev, normCurr}
+    }
+
+    getScaledCoordinates(prev, curr){
+        const scaledPrev =  {x: prev.x*this.canvas.width, y: prev.y*this.canvas.height};
+        const scaledCurr =  {x: curr.x*this.canvas.width, y: curr.y*this.canvas.height};
+        return {scaledPrev, scaledCurr}
+    }
+
+    drawStroke(prev, curr, color=this.color, thickness=this.thickness){
+        this.ctx.beginPath();
+        this.ctx.moveTo(prev.x, prev.y);
+        this.ctx.lineTo(curr.x, curr.y);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = thickness;
+        this.ctx.stroke();
+    }
+
+    draw(e){
+        e.preventDefault()
+        this.prev = {x: this.curr.x, y: this.curr.y};
+        const abs = this.getAbsoluteCanvasCoordiates()
+        this.curr.x = e.clientX - abs.left
+        this.curr.y = e.clientY - abs.top
+
+        if(this.interacting){
+            this.drawStroke(this.prev, this.curr, this.color, this.thickness);
+            // when user draws on the canvas, let everyone know via socket.io
+            const {normPrev, normCurr} = this.getNormalizedCoordinates()
+            this.socket.emit('draw', {room: this.roomNo, normPrev, normCurr, color: this.color, thickness: this.thickness})
+            this.strokes.push({normPrev, normCurr, color: this.color, thickness: this.thickness})
+            console.log(this.strokes)
+        }
+       
+    }
+
+    loadImageUrl(img){
+        console.log(img);
+        let ratio = {x: 1, y: 1};
+        // if the screen is smaller than the img size we have to reduce the image to fit
+        if (img.width > window.innerWidth)
+            ratio.x = window.innerWidth/img.width;
+        if (img.height > window.innerHeight)
+            ratio.y = img.height/window.innerHeight;
+        ratio = Math.min(ratio.x, ratio.y);
+        // resize the canvas to fit the screen and the image
+        this.canvas.width = img.width*ratio;
+        this.canvas.height = img.height*ratio;
+
+        const scale = Math.max(this.canvas.width /  img.width, this.canvas.height / img.height);
+        // get the top left position of the image
+        img.style.width = img.width * scale+'px'
+        img.style.height = img.height * scale+'px';
+
+        this.drawingBoard.style.width = img.width * scale+'px'
+        this.drawingBoard.style.height = img.height * scale+'px'
+    }
+
+    updateBackground(imageUrl){
+        this.background.style.height = null;
+        this.background.src = "";
+        this.imageUrl = imageUrl;
+        this.background.src = imageUrl;
+    }
+
 }
