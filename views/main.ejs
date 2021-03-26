@@ -1,7 +1,9 @@
 <div id="wrapper">
+    <div class="bg-dark" class="nav_bar">
+        <div class="bg-dark" id="title"><h1><%= title %></h1></div>
+    </div>
     <div id="initial_form" style="display: block">
-        <h1><%= title %></h1>
-        <p>Please insert the id of the room you want to join, if you do not have a room id, click Generate Room</p>
+        <p>Please insert the room id. If you do not have a room id, click Generate Room</p>
         <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
             <div class="form-group">
                 <label for="name">Your name*</label>

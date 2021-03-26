@@ -3,26 +3,27 @@
     <%- include("head") %>
     <body onload="init('<%= room %>','<%= user %>');">
         <div id="wrapper">
+            <div class="nav_bar">
+                <div id="title"><h1><%= title %></h1></div>
+            </div>
             <div id="chat_interface" style="display: block">
+            <div id="drawing_board" style="width: 60%;">
+                <!--Regulate the size of the image below-->
+                <img id="image" width="50%">
+                <canvas  id="canvas"></canvas>
+            </div>
+            <div class="boxed" >
                 <div>
                     <p>
                         <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
                     </p>
                 </div>
-                <p>
-                <div id="drawing_board" style="width: 100%;">
-<!--                Regulate the size of the image below-->
-                    <img id="image" width="50%">
-                    <canvas  id="canvas"></canvas>
+                <div id="history" class="container">
+                    <br/>
                 </div>
-                </p>
-                <br/>
-                <div style="min-height: 35vh" class="boxed" >
-                    <div id="history" class="container">
-                    </div>
-                </div>
+            </div>
                 <div id="input_wrapper">
-                    <div id="input" class=" boxed">
+                    <div id="input" class="boxed">
                         <form id="chat_form" onsubmit="return false;" style="width: 100%">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" onclick="inputImage()">

@@ -1,11 +1,23 @@
 function inputImage(){
-    let imageForm = document.getElementById('swap-image');
-    if (imageForm.style.display !== 'none')
+    const inputWrapper= document.getElementById('input_wrapper');
+    const imageForm = document.getElementById('swap-image');
+    if (imageForm.style.display !== 'none') {
         imageForm.style.display = 'none';
-    else
+        inputWrapper.style.height = '0px';
+    }
+    else {
         imageForm.style.display = 'block';
+        scrollBottom(50);
+        inputWrapper.style.height = '120px';
+    }
 }
 
+function scrollBottom(val){
+    $("html, body").animate({
+        scrollTop: $(
+            'html, body').get(0).scrollHeight
+    }, val);
+}
 async function swapImage(roomNo){
     const imageBase64 = document.getElementById('image_base_64');
     let imageForm = document.getElementById('swap-image');
