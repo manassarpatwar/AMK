@@ -6,6 +6,12 @@
             <div class="nav_bar">
                 <div id="title"><h1><%= title %></h1></div>
             </div>
+            <div id="swap_alert" class="alert alert-info fixed-top m-2 shadow d-none" role="alert">
+                The image was swapped by <span id = "swapper_name"></span>
+                <button id="close_swap_alert" type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <div id="chat_interface" style="display: block">
             <div id="drawing_board" style="width: 60%;">
                 <!--Regulate the size of the image below-->

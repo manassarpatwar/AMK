@@ -26,6 +26,8 @@ function init(room, user) {
             }
         })
     }
+
+    $('#close_swap_alert').on('click', () => $('#swap_alert').addClass('d-none'))
 }
 
 /**

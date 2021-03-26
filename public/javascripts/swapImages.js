@@ -37,12 +37,12 @@ async function swapAndSendImage(roomNo, name) {
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
     if(url){
-        chat.emit('sendUrl', roomNo, url);
+        chat.emit('sendUrl', roomNo, url, name);
     }
     swapImage(roomNo)
 }
 
-chat.on('sendUrl', function(roomNo, imageUrl){
+chat.on('sendUrl', function(roomNo, imageUrl, name){
     console.log("inside chat.on");
     const imageBase64 = document.getElementById('image_base_64');
 
@@ -57,6 +57,8 @@ chat.on('sendUrl', function(roomNo, imageUrl){
                 const base64 = data.result;
                 imageBase64.value = base64;
                 imageBase64.setAttribute("url", imageUrl);
+                $('#swap_alert').removeClass('d-none');
+                $('#swapper_name').html(name);
                 swapImage(roomNo)
             });
         },
