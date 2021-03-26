@@ -21,9 +21,15 @@ Project is created with:
 * [Bootstrap]
 	
 ## Setup
-To sep up this project and install all the node modules, run 
+To set up this project and install all the node modules, run 
 ```
 npm install
+```
+
+## Run
+To run this project
+```
+npm start
 ```
 
 
