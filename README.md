@@ -21,8 +21,10 @@ Project is created with:
 * [Bootstrap]
 	
 ## Setup
-To run this project, open the 'solution' folder as a new project in IntelliJ and build it by clicking the green arrow.
-
+To sep up this project, run 
+```
+npm install
+```
 
 
    [nodeJS]: <http://nodejs.org>
