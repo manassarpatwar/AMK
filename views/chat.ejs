@@ -1,56 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><%= title %></title>
-        <script src="/socket.io/socket.io.js"></script>
-        <link rel='stylesheet' href='/stylesheets/style.css'/>
-        <!-- Added Boostrap -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-        <link rel="manifest" href="/manifest.json">
-        <!-- Add to home screen for Safari on iOS -->
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <meta name="apple-mobile-web-app-title" content="AMK">
-        <link rel="apple-touch-icon" href="images/icons/AMK-152x152.png">
-        <meta name="msapplication-TileImage" content="images/icons/AMK-144x144.png">
-        <meta name="msapplication-TileColor" content="#2F3BA2">
-        <script src="/javascripts/chat.js"></script>
-        <script src="/javascripts/index.js"></script>
-        <script src="/javascripts/canvas.js"></script>
-        <script src="/javascripts/WebRTC.js"></script>
-        <script src="/javascripts/swapImages.js"></script>
-        <script src="/javascripts/database.js" type="module"></script>
-
-    </head>
+    <%- include("head") %>
     <body onload="init('<%= room %>','<%= user %>');">
         <div id="wrapper">
+            <div class="nav_bar">
+                <div id="title"><h1><%= title %></h1></div>
+            </div>
             <div id="chat_interface" style="display: block">
+            <div id="drawing_board" style="width: 60%;">
+                <!--Regulate the size of the image below-->
+                <img id="image" width="50%">
+                <canvas  id="canvas"></canvas>
+            </div>
+            <div class="boxed" >
                 <div>
                     <p>
                         <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
                     </p>
                 </div>
-                <p>
-                <div style="width: 100%;">
-<!--                Regulate the size of the image below-->
-                    <img id="image" width="50%" >
-                    <canvas  id="canvas" ></canvas>
+                <div id="history" class="container">
+                    <br/>
                 </div>
-                </p>
-                <br/>
-                <div style="min-height: 35vh" class="boxed" >
-                    <div id="history" class="container">
-                    </div>
-                </div>
+            </div>
                 <div id="input_wrapper">
-                    <div id="input" class=" boxed">
+                    <div id="input" class="boxed">
                         <form id="chat_form" onsubmit="return false;" style="width: 100%">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" onclick="inputImage()">
@@ -74,7 +47,7 @@
                                 <%- include("imageForm") %>
                                 <div class="input-group-append">
                                     <br>
-                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapImage('<%= room %>','<%= user %>')" style="float: right;"/>
+                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
                                 </div>
                             </div>
                         </form>

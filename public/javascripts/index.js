@@ -1,6 +1,7 @@
 let name = null;
 let roomNo = null;
 let socket = null;
+let canvas = null;
 let chat= io.connect('/chat');
 
 /**
@@ -12,6 +13,7 @@ let chat= io.connect('/chat');
  */
 function init(room, user) {
     // it sets up the interface so that userId and room are selected
+    scrollBottom(1000);
     initChatSocket();
     initDatabase();
     initWebRTC();
@@ -19,7 +21,7 @@ function init(room, user) {
     if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
         getCachedData(room).then(cachedData => {
-            if(cachedData.history){
+            if(cachedData && cachedData.history){
                 cachedData.history.forEach(entry => writeOnHistory(formatChatText(entry)));
             }
         })
@@ -34,7 +36,6 @@ function init(room, user) {
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('room_no').value = 'R' + roomNo;
-
     validateForm()
 }
 
@@ -62,11 +63,12 @@ function initChatSocket() {
         if (chatText !== "" && chatText!== null){
             writeOnHistory(formatChatText({who, chatText, time}));
             getCachedData(room).then(cachedData => {
-                console.log(cachedData);
-                const history = cachedData.history || [];
-                history.push({who, chatText, time});
-                cachedData.history = history;
-                updateCachedData(cachedData);
+                if(cachedData){
+                    const history = cachedData.history || [];
+                    history.push({who, chatText, time});
+                    cachedData.history = history;
+                    updateCachedData(cachedData);
+                }
             })
         }
     });
@@ -78,6 +80,7 @@ function initChatSocket() {
  * and sends the message via socket
  */
 function sendChatText() {
+    scrollBottom(50);
     let chatText = document.getElementById('chat_input').value;
     //send the chat message
     chat.emit('chat', roomNo, name, chatText);
@@ -93,7 +96,12 @@ function connectToRoom(room, user) {
     // join the room
     chat.emit('create or join', roomNo, name);
     getCachedData(room).then(cachedData => {
-        initCanvas(chat, cachedData.image.base64, roomNo, name);
+        if(!cachedData){
+            cachedData = {};
+            storeCachedData(roomNo, cachedData)
+        }
+        const base64 = cachedData.image ? cachedData.image.base64 : null;
+        canvas = new Canvas(chat, base64, roomNo);
     });
 }
 
@@ -161,6 +169,11 @@ function writeOnHistory(text) {
     document.getElementById('chat_input').value = '';
 }
 
+function clearHistory(){
+    const history = document.getElementById('history');
+    history.innerHTML = "";
+}
+
 /**
  * it hides the initial form and shows the chat
  * @param room the selected room
@@ -178,8 +191,8 @@ function hideLoginInterface(room, userId) {
 }
 
 function submitUrl(){
-    imageBase64 = document.getElementById('image_base_64');
-    imageUrl = document.getElementById('image_url');
+    const imageBase64 = document.getElementById('image_base_64');
+    const imageUrl = document.getElementById('image_url');
     console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
   
     

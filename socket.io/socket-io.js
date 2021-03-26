@@ -18,8 +18,20 @@ exports.init = function(io) {
           });
 
           socket.on('draw', function(data) {
-              chat.to(data.room).emit('draw', data)
+              socket.to(data.room).emit('draw', data)
           });
+
+          socket.on('sendUrl', function(room, url) {
+              socket.to(room).emit('sendUrl', room, url)
+          });
+
+          socket.on('clear', function(room) {
+              socket.to(room).emit('clear')
+          });
+
+     /*   socket.on('sendUrl', function(room, url) {
+            chat.to(room).emit('clear', url)
+        });*/
 
           socket.on('disconnect', function(){
             console.log('someone disconnected');
