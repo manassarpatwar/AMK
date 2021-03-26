@@ -1,9 +1,27 @@
 function inputImage(){
     let imageForm = document.getElementById('swap-image');
+    let inputField = document.getElementById('input');
+    let wrapper = document.getElementById('wrapper');
+
     if (imageForm.style.display !== 'none')
         imageForm.style.display = 'none';
     else
         imageForm.style.display = 'block';
+
+    if (inputField.style.position === 'static') {
+        console.log("wtf");
+        inputField.style.position = 'fixed';
+        inputField.style.transform = 'translateX(-50%)';
+
+    }
+    else{
+        inputField.style.position = 'static';
+        inputField.style.transform = 'none';
+        wrapper.style.height = '100%';
+        console.log(wrapper.style.height);
+    }
+    console.log(inputField.style.position);
+
 }
 
 function swapImage(roomNo, name) {

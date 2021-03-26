@@ -2,7 +2,7 @@
 <html>
     <%- include("head") %>
     <body onload="init('<%= room %>','<%= user %>');">
-        <div id="wrapper">
+        <div id="wrapper" >
             <div id="chat_interface" style="display: block">
                 <div>
                     <p>
@@ -13,7 +13,7 @@
                 <div style="width: 100%;">
                     <!--Regulate the size of the image below-->
                     <img id="image" width="50%" >
-                    <canvas  id="canvas" ></canvas>
+                    <canvas style="margin-left: auto; margin-right: auto; display: block;" id="canvas" ></canvas>
                 </div>
                 </p>
                 <br/>
@@ -42,7 +42,7 @@
                                     <input class="btn btn-outline-secondary" type="submit" id="chat_send" onclick="sendChatText()" onkeypress="pressed(event)" value="Send"/>
                                 </div>
                             </div>
-                            <div id="swap-image" style="display: none;">
+                            <div id="swap-image" style="display: none; height: 400px;">
                                 <%- include("imageForm") %>
                                 <div class="input-group-append">
                                     <br>
