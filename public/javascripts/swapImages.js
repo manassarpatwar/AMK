@@ -10,11 +10,10 @@ async function swapImage(roomNo){
     const imageBase64 = document.getElementById('image_base_64');
     let imageForm = document.getElementById('swap-image');
     const newImage = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
-
     getCachedData(roomNo).then(data => {
         data.image = newImage;
         data.history = [];
-        data.annotations = [];
+        data.annotations = [];        
         updateCachedData(data);
         canvas.updateBackground(newImage.base64);
         imageForm.style.display = 'none';
@@ -33,6 +32,8 @@ async function swapAndSendImage(roomNo, name) {
 
 chat.on('sendUrl', function(roomNo, imageUrl){
     console.log("inside chat.on");
+    const imageBase64 = document.getElementById('image_base_64');
+
     $.ajax({
         url: imageUrl,
         cache: false,

@@ -10,10 +10,10 @@
                     </p>
                 </div>
                 <p>
-                <div style="width: 100%;">
-                    <!--Regulate the size of the image below-->
-                    <img id="image" width="50%" >
-                    <canvas  id="canvas" ></canvas>
+                <div id="drawing_board" style="width: 100%;">
+<!--                Regulate the size of the image below-->
+                    <img id="image" width="50%">
+                    <canvas  id="canvas"></canvas>
                 </div>
                 </p>
                 <br/>
@@ -46,7 +46,7 @@
                                 <%- include("imageForm") %>
                                 <div class="input-group-append">
                                     <br>
-                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapImage('<%= room %>','<%= user %>')" style="float: right;"/>
+                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
                                 </div>
                             </div>
                         </form>

@@ -99,3 +99,16 @@ a {
     overflow-y: scroll;
     min-height:20vh;
 }
+
+
+#canvas{
+    position: absolute;
+}
+
+#image{
+    position: absolute;
+}
+
+#drawing_board{
+    position: relative;
+}

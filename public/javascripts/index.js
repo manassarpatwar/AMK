@@ -1,6 +1,7 @@
 let name = null;
 let roomNo = null;
 let socket = null;
+let canvas = null;
 let chat= io.connect('/chat');
 
 /**
@@ -19,7 +20,7 @@ function init(room, user) {
     if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
         getCachedData(room).then(cachedData => {
-            if(cachedData.history){
+            if(cachedData && cachedData.history){
                 cachedData.history.forEach(entry => writeOnHistory(formatChatText(entry)));
             }
         })
@@ -62,11 +63,12 @@ function initChatSocket() {
         if (chatText !== "" && chatText!== null){
             writeOnHistory(formatChatText({who, chatText, time}));
             getCachedData(room).then(cachedData => {
-                console.log(cachedData);
-                const history = cachedData.history || [];
-                history.push({who, chatText, time});
-                cachedData.history = history;
-                updateCachedData(cachedData);
+                if(cachedData){
+                    const history = cachedData.history || [];
+                    history.push({who, chatText, time});
+                    cachedData.history = history;
+                    updateCachedData(cachedData);
+                }
             })
         }
     });
@@ -93,7 +95,12 @@ function connectToRoom(room, user) {
     // join the room
     chat.emit('create or join', roomNo, name);
     getCachedData(room).then(cachedData => {
-        initCanvas(chat, cachedData.image.base64, roomNo, name);
+        if(!cachedData){
+            cachedData = {};
+            storeCachedData(roomNo, cachedData)
+        }
+        const base64 = cachedData.image ? cachedData.image.base64 : null;
+        canvas = new Canvas(chat, base64, roomNo);
     });
 }
 
@@ -159,6 +166,11 @@ function writeOnHistory(text) {
     // scroll to the last element
     history.scrollTop = history.scrollHeight;
     document.getElementById('chat_input').value = '';
+}
+
+function clearHistory(){
+    const history = document.getElementById('history');
+    history.innerHTML = "";
 }
 
 /**

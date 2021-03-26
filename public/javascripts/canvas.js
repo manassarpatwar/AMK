@@ -31,13 +31,16 @@ class Canvas{
         this.canvas.addEventListener('mousemove', e => {this.draw(e)});
         this.canvas.addEventListener('touchmove', e => {this.draw(e)});
 
-        $('#canvas_clear').on('click', e => {this.clear(e)})
+        $('#canvas_clear').on('click', e => {
+            this.socket.emit('clear', this.roomNo);
+            this.clear(e)
+        })
 
         const getScaledCoordinates = this.getScaledCoordinates.bind(this);
         const drawStroke = this.drawStroke.bind(this);
 
         getCachedData(roomNo).then(cachedData => {
-            if(cachedData.annotations && cachedData.annotations.length > 0){
+            if(cachedData && cachedData.annotations && cachedData.annotations.length > 0){
                 for(const annotation of cachedData.annotations){
                     for(const stroke of annotation){
                         const {scaledPrev, scaledCurr} = getScaledCoordinates(stroke.normPrev, stroke.normCurr);
@@ -49,9 +52,14 @@ class Canvas{
 
         this.strokes = [];
         
-        socket.on('draw', function(data){
+        this.socket.on('draw', function(data){
             const {scaledPrev, scaledCurr} = getScaledCoordinates(data.normPrev, data.normCurr);
             drawStroke(scaledPrev, scaledCurr);
+        })
+
+        const clear = this.clear.bind(this);
+        this.socket.on('clear', function(data){
+            clear();
         })
     }
 
@@ -84,6 +92,10 @@ class Canvas{
 
     clear(){
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        getCachedData(this.roomNo).then(cachedData => {
+            cachedData.annotations = []
+            updateCachedData(cachedData);
+        })
     }
 
     getNormalizedCoordinates(){
@@ -120,7 +132,6 @@ class Canvas{
             const {normPrev, normCurr} = this.getNormalizedCoordinates()
             this.socket.emit('draw', {room: this.roomNo, normPrev, normCurr, color: this.color, thickness: this.thickness})
             this.strokes.push({normPrev, normCurr, color: this.color, thickness: this.thickness})
-            console.log(this.strokes)
         }
        
     }
