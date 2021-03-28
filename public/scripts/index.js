@@ -7,8 +7,7 @@ let chat= io.connect('/chat');
 /**
  * called by <body onload>
  * it initialises the interface,the expected socket messages, WebRTC, Database
- * and declaring the service worker
- * plus the associated actions
+ * declares the service worker
  * @param room: room
  * @param user: username
  */

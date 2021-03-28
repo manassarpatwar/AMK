@@ -16,23 +16,23 @@ let cache= null;
 let dataCacheName = 'chatData-v1';
 let cacheName = 'chat';
 let filesToCache = [
+    '/',
     '/stylesheets/chat.css',
     '/stylesheets/index.css',
     '/stylesheets/WebRTC.css',
     '/stylesheets/bootstrap.min.css',
-    '/javascripts/bootstrap.min.js',
-    '/javascripts/canvas.min.js',
-    '/javascripts/jquery-3.6.0.min.js',
-    '/javascripts/database.js',
-    '/javascripts/swapImages.js',
-    '/javascripts/WebRTC.js',
-    '/javascripts/index.js',
-    '/javascripts/idb/index.js',
-    '/javascripts/idb/wrap-idb-value.js',
+    '/scripts/bootstrap.min.js',
+    '/scripts/canvas.min.js',
+    '/scripts/jquery-3.6.0.min.js',
+    '/scripts/database.js',
+    '/scripts/swapImages.js',
+    '/scripts/WebRTC.js',
+    '/scripts/index.js',
+    '/scripts/idb/index.js',
+    '/scripts/idb/wrap-idb-value.js',
     '/fonts/glyphicons-halflings-regular.woff',
-    '/fonts/glyphicons-halflings-regular.ttf',
+    '/fonts/glyphicons-halflings-regular.ttf'
 ];
-
 
 /**
  * installation event: it adds all the files to be cached
@@ -43,7 +43,6 @@ self.addEventListener('install', function (e) {
         caches.open(cacheName).then(function (cacheX) {
             console.log('[ServiceWorker] Caching app shell');
             cache= cacheX;
-            console.log("cache",filesToCache);
             return cache.addAll(filesToCache);
         })
     );
@@ -90,13 +89,13 @@ self.addEventListener('activate', function (e) {
  */
 self.addEventListener('fetch', function (e) {
     console.log('[Service Worker] Fetch', e.request.url);
-    let dataUrl = '/chat/:room/:user';
-    console.log(e.request.url, dataUrl);
+    //TODO: path
+    let dataUrl = '/';
     //if the request is '/weather_data', post to the server - do not try to cache it
     if (e.request.url.indexOf(dataUrl) > -1) {
         /*
          * When the request URL contains dataUrl, the app is asking for fresh
-         * weather data. In this case, the service worker always goes to the
+         * data. In this case, the service worker always goes to the
          * network and then caches the response.
          */
         return fetch(e.request).then(function (response) {
