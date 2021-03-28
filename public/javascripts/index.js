@@ -7,6 +7,7 @@ let chat= io.connect('/chat');
 /**
  * called by <body onload>
  * it initialises the interface,the expected socket messages, WebRTC, Database
+ * and declaring the service worker
  * plus the associated actions
  * @param room: room
  * @param user: username
@@ -15,9 +16,20 @@ function init(room, user) {
     // it sets up the interface so that userId and room are selected
     scrollBottom(1000);
     initChatSocket();
-    initDatabase();
+    //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
     initWebRTC();
-    //it connects to a room when someone open the link or refresh the page (init for chat.ejs)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('./service-worker.js')
+            .then(function() { console.log('Service Worker Registered'); });
+    }
+    //it connects to a room when someone opens the link or refreshes the page (init for chat.ejs)
     if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
         getCachedData(room).then(cachedData => {
@@ -244,4 +256,33 @@ function convertToBase64(blob){
         fileReader.readAsDataURL(blob);
     })
   
+}
+/**
+ * When the client gets off-line, it shows an off line warning to the user
+ * so that it is clear that the data is stale
+ */
+window.addEventListener('offline', function(e) {
+    // Queue up events for server.
+    console.log("You are offline");
+    showOfflineWarning();
+}, false);
+
+/**
+ * When the client gets online, it hides the off line warning
+ */
+window.addEventListener('online', function(e) {
+    // Resync data with server.
+    console.log("You are online");
+    hideOfflineWarning();
+}, false);
+
+
+function showOfflineWarning(){
+    if (document.getElementById('offline_div')!=null)
+        document.getElementById('offline_div').style.display='block';
+}
+
+function hideOfflineWarning(){
+    if (document.getElementById('offline_div')!=null)
+        document.getElementById('offline_div').style.display='none';
 }
