@@ -13,6 +13,7 @@ let chat= io.connect('/chat');
  */
 function init(room, user) {
     // it sets up the interface so that userId and room are selected
+    scrollBottom(1000);
     initChatSocket();
     initDatabase();
     initWebRTC();
@@ -25,6 +26,8 @@ function init(room, user) {
             }
         })
     }
+
+    $('#close_swap_alert').on('click', () => $('#swap_alert').addClass('d-none'))
 }
 
 /**
@@ -35,7 +38,6 @@ function init(room, user) {
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('room_no').value = 'R' + roomNo;
-
     validateForm()
 }
 
@@ -80,6 +82,7 @@ function initChatSocket() {
  * and sends the message via socket
  */
 function sendChatText() {
+    scrollBottom(50);
     let chatText = document.getElementById('chat_input').value;
     //send the chat message
     chat.emit('chat', roomNo, name, chatText);
