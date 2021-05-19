@@ -9,14 +9,20 @@ initDB.init();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  // to get image path, add parent path to path from mongoDB!!!
   res.render('index', { title: 'Image Browsing' });
 });
 
 /* save image in the database*/
 router.post('/save', function(req, res, next) {
-
+  // create separate directory for each author
   let parent = __dirname.replace("\\routes", "");
-  let imagePath = parent + "/private_access/images/" + req.body.title;
+  let dirPath = parent + "/private_access/images/" + req.body.author
+  if (!fs.existsSync(dirPath)){
+    fs.mkdirSync(dirPath);
+  }
+  let directPath = "/private_access/images/" + req.body.author + "/" + req.body.title;
+  let imagePath = parent + directPath;
   fs.writeFile(imagePath, req.body.data, 'base64', err => {
     console.log(err);
   })
@@ -25,7 +31,7 @@ router.post('/save', function(req, res, next) {
     title: req.body.title,
     author: req.body.author,
     description: req.body.description,
-    url: imagePath
+    url: directPath
   }
   // console.log(req.body);
   image.insert(img, res);

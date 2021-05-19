@@ -122,9 +122,6 @@ function createRoom() {
     const imageBase64 = document.getElementById('image_base_64');
     const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
 
-    // mongoDB
-    // @todo replace with real data
-    // @todo save the image to the private folder
     let img = {
         title: title,
         author: name,
