@@ -26,8 +26,14 @@ function init(room, user) {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
             .register('./service-worker.js')
-            .then(function() { console.log('Service Worker Registered'); });
+            .then(function() {
+                console.log('ServiceWorker registration successful with scope:');
+            }, function(err) {
+                // registration failed
+                console.log('ServiceWorker registration failed: ', err);
+            });
     }
+
     //it connects to a room when someone opens the link or refreshes the page (init for chat.ejs)
     if (typeof room !== 'undefined' && typeof user !=='undefined'){
         connectToRoom(room, user);
