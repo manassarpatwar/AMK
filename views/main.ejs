@@ -1,8 +1,10 @@
 <div id="wrapper">
     <div class="nav_bar">
-        <div id="title"><h1><%= title %></h1></div>
+        <div id="title"><h1>AMK Chat</h1></div>
     </div>
     <div id="initial_form" style="display: block">
+        <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+        <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
         <p>Please insert the room id. If you do not have a room id, click Generate Room</p>
         <form name="initial_form" onsubmit="return false;" onchange="validateForm()">
             <div class="form-group">

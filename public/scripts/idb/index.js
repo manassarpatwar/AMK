@@ -2,12 +2,12 @@ import { w as wrap, r as replaceTraps } from "./wrap-idb-value.js?module";
 export { u as unwrap, w as wrap } from "./wrap-idb-value.js?module";
 
 /**
-                                                                      * Open a database.
-                                                                      *
-                                                                      * @param name Name of the database.
-                                                                      * @param version Schema version.
-                                                                      * @param callbacks Additional callbacks.
-                                                                      */
+* Open a database.
+*
+* @param name Name of the database.
+* @param version Schema version.
+* @param callbacks Additional callbacks.
+*/
 function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
   const request = indexedDB.open(name, version);
   const openPromise = wrap(request);

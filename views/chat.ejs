@@ -4,7 +4,7 @@
     <body onload="init('<%= room %>','<%= user %>');">
         <div id="wrapper">
             <div class="nav_bar">
-                <div id="title"><h1><%= title %></h1></div>
+                <div id="title"><h1>AMK Chat</h1></div>
             </div>
             <div id="swap_alert" class="alert alert-info fixed-top m-2 shadow d-none" role="alert">
                 The image was swapped by <span id = "swapper_name"></span>
@@ -13,6 +13,7 @@
                 </button>
             </div>
             <div id="chat_interface" style="display: block">
+            <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
             <div id="drawing_board" style="width: 60%;">
                 <!--Regulate the size of the image below-->
                 <img id="image" width="50%">
