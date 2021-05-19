@@ -29,10 +29,6 @@ exports.init = function(io) {
               socket.to(room).emit('clear')
           });
 
-     /*   socket.on('sendUrl', function(room, url) {
-            chat.to(room).emit('clear', url)
-        });*/
-
           socket.on('disconnect', function(){
             console.log('someone disconnected');
           });
