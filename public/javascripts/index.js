@@ -1,8 +1,12 @@
+
 let name = null;
 let roomNo = null;
 let socket = null;
 let canvas = null;
 let chat= io.connect('/chat');
+
+
+
 
 /**
  * called by <body onload>
@@ -112,6 +116,8 @@ function createRoom() {
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value
+    let title = document.getElementById('img_title').value + ".png";
+    let description = document.getElementById('description').value
     if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
     const imageBase64 = document.getElementById('image_base_64');
     const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
@@ -120,10 +126,10 @@ function createRoom() {
     // @todo replace with real data
     // @todo save the image to the private folder
     let img = {
-        title: "title",
+        title: title,
         author: name,
-        description: "description",
-        url: "url"
+        description: description,
+        data: imageBase64.value.split(',')[1]
     }
 
     storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
@@ -138,10 +144,11 @@ function validateForm() {
     let name = document.getElementById('name').value;
     let roomNo= document.getElementById('room_no').value
     const anonymous = document.getElementById('checkAnonymous');
+    let canvas_style = document.getElementById('preview_canvas').style.display;
     if (anonymous.checked){
         document.getElementById('name').value = "";
     }
-    if (roomNo  ==="" || (name ==="" && !anonymous.checked)) {
+    if (roomNo  ==="" || (name ==="" && !anonymous.checked) || canvas_style === "none") {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
     }

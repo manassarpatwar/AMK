@@ -23,6 +23,14 @@
                 </div>
             </div>
             <%- include("imageForm") %>
+            <div class="form-group">
+                <label for="img_title">Insert title of your image</label>
+                <input name="img_title" type="text" class="form-control" id="img_title" aria-describedby="nameHelp" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="description">What does your image show?</label>
+                <input name="description" type="text" class="form-control" id="description" aria-describedby="nameHelp" placeholder="default...">
+            </div>
             <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="createRoom()" class="btn btn-primary" value="Connect"/>
             <div id="valid_form_help">
                 <small disabled class="form-text text-muted">You must provide the room id and your name.</small>

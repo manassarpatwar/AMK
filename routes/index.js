@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
 
 const image = require('../controllers/images');
 const initDB= require('../controllers/init');
@@ -13,7 +14,21 @@ router.get('/', function(req, res, next) {
 
 /* save image in the database*/
 router.post('/save', function(req, res, next) {
-  image.insert(req, res);
+
+  let parent = __dirname.replace("\\routes", "");
+  let imagePath = parent + "/private_access/images/" + req.body.title;
+  fs.writeFile(imagePath, req.body.data, 'base64', err => {
+    console.log(err);
+  })
+
+  let img = {
+    title: req.body.title,
+    author: req.body.author,
+    description: req.body.description,
+    url: imagePath
+  }
+  // console.log(req.body);
+  image.insert(img, res);
 });
 
 /* GET all images from the database*/

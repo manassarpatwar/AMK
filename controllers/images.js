@@ -3,7 +3,7 @@ const Image = require('../models/images');
 
 exports.insert = function (req, res) {
     console.log("inside insert")
-    let userData = req.body;
+    let userData = req;
     console.log(userData);
     if (userData == null) {
         res.status(403).send('No data sent!')
