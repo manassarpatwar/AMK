@@ -9,11 +9,7 @@ let Image = new Schema(
         title: {type: String, required: true, max: 100},
         author: {type: String, required: true, max: 100},
         description: {type: String, required: true, max: 500},
-        img:
-            {
-                data: Buffer,
-                contentType: String
-            }
+        url: {type: String, required: true, max: 100}
     }
 );
 

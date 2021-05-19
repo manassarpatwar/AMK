@@ -1,6 +1,4 @@
 let mongoose = require('mongoose');
-let ObjectId = require('mongodb').ObjectID;
-let bcrypt = require('bcryptjs');
 
 //The URL which will be queried. Run "mongod.exe" for this to connect
 

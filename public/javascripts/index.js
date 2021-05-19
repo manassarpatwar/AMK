@@ -114,10 +114,20 @@ function createRoom() {
     name = document.getElementById('name').value
     if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
     const imageBase64 = document.getElementById('image_base_64');
-    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value}
-    // @todo call image.insert here or inside storeCachedData!
+    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
 
-    storeCachedData(roomNo, {image}, () => location.assign('/chat/'+roomNo+'/'+name));
+    // mongoDB
+    // @todo replace with real data
+    // @todo save the image to the private folder
+    let img = {
+        title: "title",
+        author: name,
+        description: "description",
+        url: "url"
+    }
+
+    storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
+
 }
 
 /**
@@ -140,6 +150,33 @@ function validateForm() {
         document.getElementById("valid_form_help").style.display = "none";
     }
 }
+
+function sendAjaxQuery(url, data, room, name) {
+    console.log("send")
+    $.ajax({
+        url: url ,
+        data: data,
+        dataType: 'json',
+        type: 'POST',
+        success: function (dataR) {
+            // no need to JSON parse the result, as we are using
+            // dataType:json, so JQuery knows it and unpacks the
+            // object for us before returning it
+            let ret = dataR;
+            // in order to have the object printed by alert
+            // we need to JSON stringify the object
+            // document.getElementById('results').innerHTML= JSON.stringify(ret);
+            console.log(ret);
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error.message);
+        }
+
+    });
+    location.assign('/chat/'+room+'/'+name);
+}
+
+
 
 /**
  * it enables a pressed key 'enter' sends a message
