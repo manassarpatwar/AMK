@@ -404,13 +404,25 @@ function widgetInit(){
  */
 function selectItem(event){
     let row= event.row;
+    // @todo save row inside indexedDb
     // document.getElementById('resultImage').src= row.json.image.url;
-    document.getElementById('resultId').innerText= 'id: '+row.id;
-    document.getElementById('resultName').innerText= row.name;
-    document.getElementById('resultDescription').innerText= row.rc;
-    document.getElementById("resultUrl").href= row.qc;
-    document.getElementById('resultPanel').style.display= 'block';
+    let current_result = document.getElementById('resultPanel').innerText;
+    let newDiv = '<div><h4><a>Some text</a></h4> </div>';
+    document.getElementById('resultPanel').innerText= current_result + newDiv;
+    // document.getElementById('resultId').innerText= 'id: '+row.id;
+    // document.getElementById('resultName').innerText= row.name;
+    // document.getElementById('resultDescription').innerText= row.rc;
+    // document.getElementById("resultUrl").href= row.qc;
+    // document.getElementById('resultPanel').style.display= 'block';
 }
+
+$(function() {
+    $('#btnAddtoList').click(function(){
+
+        //newDiv.style.background = "#000";
+        $('body').append(newDiv);
+    });
+});
 
 /**
  * currently not used. left for reference
