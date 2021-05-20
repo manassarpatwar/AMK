@@ -408,6 +408,8 @@ function createRoomShow(){
     document.getElementById('buttons').style.display = 'none';
     document.getElementById('textJoin').style.display='none';
     document.getElementById('textCreate').style.display='block';
+    document.getElementById('room_no_generator').style.display = 'inline-block';
+    document.getElementById('room_no').style.maxWidth = 'calc(100% - 95px)';
     window.scrollTo(0,0);
 }
 
@@ -418,5 +420,7 @@ function joinRoomShow(){
     document.getElementById('createRoom').style.display='none';
     document.getElementById('joinRoom').style.display='block';
     document.getElementById('buttons').style.display = 'none';
+    document.getElementById('room_no_generator').style.display = 'none';
+    document.getElementById('room_no').style.maxWidth = 'none';
     window.scrollTo(0,0);
 }
