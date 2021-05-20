@@ -142,6 +142,7 @@ function createRoom() {
     const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
 
     let img = {
+        roomNo: roomNo,
         title: img_title,
         author: name,
         description: description,

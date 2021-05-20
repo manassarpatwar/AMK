@@ -10,6 +10,7 @@ exports.insert = function (req, res) {
     }
     try {
         let image = new Image({
+            roomNo: userData.roomNo,
             title: userData.title,
             author: userData.author,
             description: userData.description,
@@ -33,7 +34,7 @@ exports.insert = function (req, res) {
 exports.getAll = function (req, res) {
     try {
         Image.find({},
-            'title author description url',
+            'roomNo title author description url',
             function (err, images) {
                 if (err)
                     res.status(500).send('Invalid data!');
@@ -50,7 +51,7 @@ exports.getAll = function (req, res) {
 exports.getByAuthor = function (userData, res) {
     try {
         Image.find({author: userData.author},
-            'title author description url',
+            'roomNo title author description url',
             function (err, images) {
                 if (err)
                     res.status(500).send('Invalid data!');

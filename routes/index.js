@@ -17,17 +17,18 @@ router.get('/', function(req, res, next) {
 router.post('/save', function(req, res, next) {
   // create separate directory for each author
   let parent = __dirname.replace("\\routes", "");
-  let dirPath = parent + "/private_access/images/" + req.body.author
+  let dirPath = parent + "/private_access/images"
   if (!fs.existsSync(dirPath)){
     fs.mkdirSync(dirPath);
   }
-  let directPath = "/private_access/images/" + req.body.author + "/" + req.body.title;
+  let directPath = "/private_access/images/" + req.body.title;
   let imagePath = parent + directPath;
   fs.writeFile(imagePath, req.body.data, 'base64', err => {
     console.log(err);
   })
 
   let img = {
+    roomNo: req.body.roomNo,
     title: req.body.title,
     author: req.body.author,
     description: req.body.description,
