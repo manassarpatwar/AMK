@@ -5,14 +5,16 @@
         <div id="wrapper">
            <%- include("nav") %>
             <div class="flex" style="text-align: center; margin-top: 40vh;" id="buttons">
+                <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
                 <button type="button" onClick='createRoomShow()' class="btn btn-dark">Create a room</button>
                 <button type="button" onClick='joinRoomShow()' class="btn btn-dark">Join a room</button>
             </div>
             <div id='formJoinCreate' style='display: none;'>
                 <div style="display: block; text-align:center; ">
-                    <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
-                    <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
                     <form id="initial_form" name="initial_form" onsubmit="return false;" onchange="validateForm()">
+                        <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                        <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
                         <div style="display:none;" id='textCreate'>
                             <h4>CREATE A NEW ROOM</h4>
                             <p>Please insert your name, picture and the room id. If you do not have a room id, click Generate.</p>
