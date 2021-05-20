@@ -63,3 +63,28 @@ exports.getByAuthor = function (userData, res) {
         res.status(500).send('error '+ e);
     }
 }
+
+exports.getRooms = function (req, res) {
+    try {
+        Image.find({},
+            'roomNo title author description url',
+            function (err, images) {
+                if (err)
+                    res.status(500).send('Invalid data!');
+
+                let rooms = []
+                for (let img of images){
+                    let room = img["roomNo"]
+                    if (!(room in rooms) && !(room === undefined)){
+                        rooms.push(room);
+                    }
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(rooms));
+                console.log(rooms)
+            });
+    } catch (e) {
+        res.status(500).send('error '+ e);
+    }
+}
