@@ -7,9 +7,6 @@ let img_title = null;
 let description = null;
 let chat= io.connect('/chat');
 
-
-
-
 /**
  * called by <body onload>
  * it initialises the interface,the expected socket messages, WebRTC, Database
@@ -364,4 +361,18 @@ function showOfflineWarning(){
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
+}
+
+function createRoomShow(){
+    document.getElementById('createRoom').style.display='block';
+    document.getElementById('joinRoom').style.display='none';
+    document.getElementById('buttons').style.display = 'none';
+    window.scrollTo(0,0);
+}
+
+function joinRoomShow(){
+    document.getElementById('createRoom').style.display='none';
+    document.getElementById('joinRoom').style.display='block';
+    document.getElementById('buttons').style.display = 'none';
+    window.scrollTo(0,0);
 }

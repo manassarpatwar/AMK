@@ -2,6 +2,21 @@
 <html>
     <%- include("head") %>
     <body onload="init()">
-        <%- include("main") %>
+        <div id="wrapper">
+            <div class="nav_bar">
+                <img src="/images/AMK.png" alt="AMK logo" style="width:70px">
+                <div id="title"><h1>AMK</h1></div>
+            </div>
+            <div class="flex" style="text-align: center; margin-top: 40vh;" id="buttons">
+                <button type="button" onClick='createRoomShow()' class="btn btn-dark">Create a room</button>
+                <button type="button" onClick='joinRoomShow()'class="btn btn-dark">Join a room</button>
+            </div>
+            <div style='display: none;' id='createRoom'>
+                <%- include("createRoom") %>
+            </div>
+            <div style='display: none;' id='joinRoom'>
+                <%- include("joinRoom") %>
+            </div>
+        </div>
     </body>
 </html>

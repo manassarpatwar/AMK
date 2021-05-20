@@ -18,6 +18,7 @@ let filesToCache = [
     '/scripts/idb/index.js',
     '/scripts/idb/wrap-idb-value.js',
     '/fonts/glyphicons-halflings-regular.woff',
+    '/fonts/FredokaOne-Regular.ttf',
     '/fonts/glyphicons-halflings-regular.ttf'
 ];
 

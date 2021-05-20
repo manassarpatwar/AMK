@@ -106,7 +106,7 @@ a {
     max-width: 1350px;
     min-height: 70px;
     z-index: 100;
-    background-color: rgb(33,37,41);
+    background-color: white;
     max-height: 10vh;
 }
 
@@ -114,11 +114,17 @@ a {
     position: absolute;
     top: 10px;
     left: 110px;
-    color: rgba(255,255,255,0.98);
+    color: black;
+    font-family: 'Fredoka One';
 }
 
 .offline_div{
     width:100%;
     text-align: center;
+}
+
+.btn-dark{
+    width:200px;
+    margin: 2%;
 }
 
