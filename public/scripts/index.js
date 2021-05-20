@@ -154,7 +154,7 @@ function createRoom() {
     }
     else {
         img = null;
-        storeCachedData(roomNo, img, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
+        location.assign('/chat/'+roomNo+'/'+name);
     }
 }
 
