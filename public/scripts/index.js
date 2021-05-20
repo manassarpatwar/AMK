@@ -125,8 +125,13 @@ function connectToRoom(room, user) {
             cachedData = {};
             storeCachedData(roomNo, cachedData)
         }
-        const base64 = cachedData.image ? cachedData.image.base64 : null;
-        canvas = new Canvas(chat, base64, roomNo);
+        if(cachedData.image){
+            canvas = new Canvas(chat, cachedData.image.base64, roomNo);
+        }else{
+            getImage(room, function(data){
+                canvas = new Canvas(chat, data['base64'], roomNo);
+            })
+        }
     });
 }
 
@@ -149,7 +154,7 @@ function createRoom() {
         data: imageBase64.value.split(',')[1]
     }
 
-    storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
+    storeCachedData(roomNo, {image}, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
 
 }
 
@@ -193,28 +198,24 @@ function validateForm() {
  * the uploaded image in the MongoDB
  *
  */
-function sendAjaxQuery(url, data, room, name) {
-    console.log("send")
+function sendImage(data, callback) {
     $.ajax({
-        url: url ,
+        url: '/save',
         data: data,
-        dataType: 'json',
         type: 'POST',
         success: function (dataR) {
-            let ret = dataR;
-            console.log(ret);
+            callback()
         },
         error: function (xhr, status, error) {
             alert('Error: ' + error.message);
         }
 
     });
-    location.assign('/chat/'+room+'/'+name);
 }
 
 function getImages(){
     $.ajax({
-        url: '/get_images' ,
+        url: '/images' ,
         data: '',
         dataType: 'json',
         type: 'GET',
@@ -226,7 +227,19 @@ function getImages(){
         error: function (xhr, status, error) {
             alert('Error: ' + error.message);
         }
+    });
+}
 
+function getImage(room, callback){
+    $.ajax({
+        url: '/image/'+room,
+        type: 'GET',
+        success: function (data) {
+            callback(data)
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error.message);
+        }
     });
 }
 
