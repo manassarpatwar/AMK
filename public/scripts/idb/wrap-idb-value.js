@@ -181,5 +181,3 @@ function wrap(value) {
     return newValue;
 }
 const unwrap = (value) => reverseTransformCache.get(value);
-
-export { reverseTransformCache as a, instanceOfAny as i, replaceTraps as r, unwrap as u, wrap as w };

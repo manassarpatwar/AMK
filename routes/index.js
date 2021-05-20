@@ -43,10 +43,9 @@ router.get('/get_images', function(req, res, next) {
   image.getAll(req, res);
 });
 
-/* GET all images from the database*/
-router.get('/get_images/:user', function(req, res, next) {
-  let data = {author: req.params.user};
-  image.getByAuthor(data, res);
+router.get('/get_image_by_room/:roomNo', function(req, res, next) {
+  let data = {roomNo: req.params.roomNo};
+  image.getByRoom(data, res);
 });
 
 /* GET all the rooms*/

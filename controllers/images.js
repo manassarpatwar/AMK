@@ -48,9 +48,9 @@ exports.getAll = function (req, res) {
     }
 }
 
-exports.getByAuthor = function (userData, res) {
+exports.getByRoom = function (userData, res) {
     try {
-        Image.find({author: userData.author},
+        Image.find({roomNo: userData.roomNo},
             'roomNo title author description url',
             function (err, images) {
                 if (err)

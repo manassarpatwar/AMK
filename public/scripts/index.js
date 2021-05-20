@@ -28,7 +28,7 @@ function init(room, user) {
     initWebRTC();
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-            .register('./service-worker.js')
+            .register('/service-worker.js')
             .then(function() {
                 console.log('ServiceWorker registration successful with scope:');
             }, function(err) {
