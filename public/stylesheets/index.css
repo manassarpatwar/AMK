@@ -103,7 +103,9 @@ a {
 #image{
     position: absolute;
 }
-
+#image-form{
+    text-align: center;
+}
 #drawing_board{
     position: relative;
 }
