@@ -49,7 +49,7 @@ router.get('/image/:roomNo', function(req, res, next) {
 });
 
 /* GET all the rooms*/
-router.get('/get_rooms/', function(req, res, next) {
+router.get('/rooms', function(req, res, next) {
   image.getRooms(req, res);
 });
 

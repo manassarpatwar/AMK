@@ -30,6 +30,9 @@
     <label for="description">What does your image show?*</label>
     <input name="description" type="text" class="form-control" id="description" aria-describedby="nameHelp" placeholder="">
 </div>
-<div id="valid_form_image_name">
+<div id="valid_form_image_name" style="display: none;">
     <small disabled class="form-text text-muted">The image name cannot contain: <">\/*?:|.</small>
+</div>
+<div id="existing_room" style="display: none;">
+    <small disabled class="form-text text-muted">This room already exists, please use different name. </small>
 </div>

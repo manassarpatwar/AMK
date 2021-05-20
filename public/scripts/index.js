@@ -126,35 +126,49 @@ function connectToRoom(room, user) {
         }else{
             getImage(room).then(function(data){
                 canvas = new Canvas(chat, data['base64'], roomNo);
+                console.log("hello")
             })
         }
     });
 }
 
-function createRoom() {
+async function createRoom() {
     const anonymous = document.getElementById('checkAnonymous');
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
+    let rooms = await getRooms();
+
     let img;
     if (document.getElementById('joinRoom').style.display==='none') {
-        imgTitle = document.getElementById('img_title').value;
-        description = document.getElementById('description').value;
-        if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
-        const imageBase64 = document.getElementById('image_base_64');
-        const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
-        img = {
-            roomNo: roomNo,
-            title: imgTitle,
-            author: name,
-            description: description,
-            data: imageBase64.value.split(',')[1]
+        if (rooms.includes(roomNo)){
+            document.getElementById("existing_room").style.display = "block";
         }
-        storeCachedData(roomNo, {image, title: imgTitle, description: description}, () => sendImage(img).then(() => location.assign('/chat/'+roomNo+'/'+name)));
+        else {
+            imgTitle = document.getElementById('img_title').value;
+            description = document.getElementById('description').value;
+            if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
+            const imageBase64 = document.getElementById('image_base_64');
+            const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+            img = {
+                roomNo: roomNo,
+                title: imgTitle,
+                author: name,
+                description: description,
+                data: imageBase64.value.split(',')[1]
+            }
+            storeCachedData(roomNo, {image, title: imgTitle, description: description}, () => sendImage(img).then(() => location.assign('/chat/'+roomNo+'/'+name)));
+        }
     }
     else {
-        img = null;
-        location.assign('/chat/'+roomNo+'/'+name);
+
+        if (rooms.includes(roomNo)){
+            img = null;
+            location.assign('/chat/'+roomNo+'/'+name);
+        }
+        else {
+            document.getElementById("new_room").style.display = "block";
+        }
     }
 }
 
@@ -230,26 +244,30 @@ function sendImage(imageData) {
             type: 'POST',
             success: function (data) {
                 resolve(data)
+                console.log("saved")
             },
             error: function (xhr, status, error) {
                 reject({'error': error.message});
+                console.log("failure")
             }
         });
     })
 }
 
 function getImages(){
-    $.ajax({
-        url: '/images' ,
-        data: '',
-        dataType: 'json',
-        type: 'GET',
-        success: function (dataR) {
-            let ret = dataR;
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: '/images',
+            data: '',
+            dataType: 'json',
+            type: 'GET',
+            success: function (data) {
+                resolve(data)
+            },
+            error: function (xhr, status, error) {
+                reject('Error: ' + error.message);
+            }
+        });
     });
 }
 
@@ -266,6 +284,21 @@ function getImage(room){
             }
         });
     })
+}
+
+function getRooms(){
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: '/rooms',
+            type: 'GET',
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (xhr, status, error) {
+                reject('Error: ' + error.message);
+            }
+        });
+    });
 }
 
 /**

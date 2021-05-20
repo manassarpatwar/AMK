@@ -37,6 +37,9 @@
                                 <input name="room_no" type="text" class="form-control" id="room_no">
                                 <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate</button>
                             </div>
+                            <div id="new_room" style="display: none;">
+                                <small disabled class="form-text text-muted">This room doesn't exist. </small>
+                            </div>
                         </div>
                         <div style='display: none;' id='createRoom'>
                             <%- include("imageForm") %>

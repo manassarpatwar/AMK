@@ -92,14 +92,14 @@ exports.getRooms = function (req, res) {
                 let rooms = []
                 for (let img of images){
                     let room = img["roomNo"]
-                    if (!(room in rooms) && !(room === undefined)){
+                    if (!(rooms.includes(room)) && !(room === undefined)){
                         rooms.push(room);
                     }
                 }
 
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify(rooms));
-                console.log(rooms)
+                console.log(rooms);
             });
     } catch (e) {
         res.status(500).send('error '+ e);
