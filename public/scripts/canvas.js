@@ -12,7 +12,7 @@ class Canvas{
 
         this.canvas.width = window.innerWidth*0.25;
         this.canvas.height = window.innerHeight*0.25;
-        this.color = 'red';
+        this.color = '#ff0000';
         this.thickness = 4;
 
         this.background.style.width = null;

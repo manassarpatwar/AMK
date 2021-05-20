@@ -5,6 +5,7 @@ let socket = null;
 let canvas = null;
 let img_title = null;
 let description = null;
+let colour = "#ff0000";
 let chat= io.connect('/chat');
 
 
@@ -363,4 +364,9 @@ function showOfflineWarning(){
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
+}
+
+function changeColour(){
+    colour = document.getElementById("colour").value;
+    console.log(colour);
 }

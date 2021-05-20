@@ -13,11 +13,17 @@
                 </button>
             </div>
             <div id="chat_interface" style="display: block">
-            <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
-            <div id="drawing_board" style="width: 60%;">
+                <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                <div class="form-group">
+                    <form name="colour_form" onchange="changeColour()">
+                    <label for="colour">Choose annotations' colour</label>
+                    <input name="colour" type="color" id="colour" aria-describedby="nameHelp" value="#ff0000">
+                    </form>
+                </div>
+                <div id="drawing_board" style="width: 60%;">
                 <!--Regulate the size of the image below-->
-                <img id="image" width="50%">
-                <canvas  id="canvas"></canvas>
+                    <img id="image" width="50%">
+                    <canvas  id="canvas"></canvas>
             </div>
             <div class="boxed" >
                 <div>
