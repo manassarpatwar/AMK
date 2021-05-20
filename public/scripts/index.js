@@ -7,9 +7,6 @@ let img_title = null;
 let description = null;
 let chat= io.connect('/chat');
 
-
-
-
 /**
  * called by <body onload>
  * it initialises the interface,the expected socket messages, WebRTC, Database
@@ -61,7 +58,6 @@ function init(room, user) {
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('room_no').value = 'R' + roomNo;
-    validateForm()
 }
 
 /**
@@ -140,29 +136,33 @@ function createRoom() {
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
-    img_title = document.getElementById('img_title').value + ".png";
-    description = document.getElementById('description').value;
-    if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
-    const imageBase64 = document.getElementById('image_base_64');
-    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
-
-    let img = {
-        roomNo: roomNo,
-        title: img_title,
-        author: name,
-        description: description,
-        data: imageBase64.value.split(',')[1]
+    let img;
+    if (document.getElementById('joinRoom').style.display==='none') {
+        img_title = document.getElementById('img_title').value + ".png";
+        description = document.getElementById('description').value;
+        if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
+        const imageBase64 = document.getElementById('image_base_64');
+        const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+        img = {
+            roomNo: roomNo,
+            title: img_title,
+            author: name,
+            description: description,
+            data: imageBase64.value.split(',')[1]
+        }
+        storeCachedData(roomNo, {image}, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
     }
-
-    storeCachedData(roomNo, {image}, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
-
+    else {
+        img = null;
+        location.assign('/chat/'+roomNo+'/'+name);
+    }
 }
 
 /**
- * used to validate whether all required fields are present (user and room number)
+ * used to validate whether all required fields are present
  *
  */
-function validateForm() {
+function validateFormCreate() {
     let name = document.getElementById('name').value;
     let roomNo= document.getElementById('room_no').value
     const anonymous = document.getElementById('checkAnonymous');
@@ -178,18 +178,42 @@ function validateForm() {
     if (img_title === "" || (/[<">\/*?:|]+/.test(img_title)))
         valid_title = false;
 
-
     if (roomNo  === "" || (name === "" && !anonymous.checked) || canvas_style === "none" || !valid_title || description === "") {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
         if (!valid_title)
             document.getElementById("valid_form_image_name").style.display = "block";
-
     }
     else{
         document.getElementById("connect_btn").disabled = false;
         document.getElementById("valid_form_help").style.display = "none";
         document.getElementById("valid_form_image_name").style.display = "none";
+    }
+}
+
+function validateForm(){
+    if (document.getElementById('joinRoom').style.display==='block')
+        validateFormJoin();
+    else if (document.getElementById('joinRoom').style.display==='none')
+        validateFormCreate();
+}
+
+/**
+ * used to validate whether all required fields are present
+ *
+ */
+function validateFormJoin(){
+    let name = document.getElementById('name').value;
+    let roomNo= document.getElementById('room_no').value
+    const anonymous = document.getElementById('checkAnonymous');
+    if (anonymous.checked){
+        document.getElementById('name').value = "";
+    }
+    if (roomNo  === "" || (name === "" && !anonymous.checked)) {
+        document.getElementById("connect_btn").disabled = true;
+    }
+    else {
+        document.getElementById("connect_btn").disabled = false;
     }
 }
 
@@ -199,6 +223,7 @@ function validateForm() {
  *
  */
 function sendImage(data, callback) {
+  if (data) {
     $.ajax({
         url: '/save',
         data: data,
@@ -211,6 +236,7 @@ function sendImage(data, callback) {
         }
 
     });
+  }
 }
 
 function getImages(){
@@ -220,9 +246,7 @@ function getImages(){
         dataType: 'json',
         type: 'GET',
         success: function (dataR) {
-            // @todo display all the images on the main page
             let ret = dataR;
-            console.log(ret);
         },
         error: function (xhr, status, error) {
             alert('Error: ' + error.message);
@@ -299,9 +323,8 @@ function hideLoginInterface(room, userId) {
 function submitUrl(){
     const imageBase64 = document.getElementById('image_base_64');
     const imageUrl = document.getElementById('image_url');
-    console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-  
-    
+    //console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
+
     $.ajax({
         url: imageUrl.value,
         cache: false,
@@ -311,7 +334,6 @@ function submitUrl(){
         success: function(blob){
             convertToBase64(blob).then(data => {
                 const base64 = data.result;
-                console.log(base64);
                 imageBase64.value = base64;
                 imageBase64.setAttribute("url", imageUrl.value);
                 preview(base64);
@@ -377,4 +399,24 @@ function showOfflineWarning(){
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
+}
+
+function createRoomShow(){
+    document.getElementById('formJoinCreate').style.display='block';
+    document.getElementById('createRoom').style.display='block';
+    document.getElementById('joinRoom').style.display='none';
+    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('textJoin').style.display='none';
+    document.getElementById('textCreate').style.display='block';
+    window.scrollTo(0,0);
+}
+
+function joinRoomShow(){
+    document.getElementById('textJoin').style.display='block';
+    document.getElementById('textCreate').style.display='none';
+    document.getElementById('formJoinCreate').style.display='block';
+    document.getElementById('createRoom').style.display='none';
+    document.getElementById('joinRoom').style.display='block';
+    document.getElementById('buttons').style.display = 'none';
+    window.scrollTo(0,0);
 }

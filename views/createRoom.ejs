@@ -1,0 +1,12 @@
+<%- include("imageForm") %>
+<div class="form-group">
+    <label for="img_title">Title of your image*</label>
+    <input name="img_title" type="text" class="form-control" id="img_title" aria-describedby="nameHelp" placeholder="">
+</div>
+<div class="form-group">
+    <label for="description">What does your image show?*</label>
+    <input name="description" type="text" class="form-control" id="description" aria-describedby="nameHelp" placeholder="">
+</div>
+<div id="valid_form_image_name">
+    <small disabled class="form-text text-muted">The image name cannot contain: <">\/*?:|.</small>
+</div>

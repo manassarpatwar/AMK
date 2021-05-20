@@ -48,6 +48,11 @@ router.get('/image/:roomNo', function(req, res, next) {
   image.getByRoom(data, res);
 });
 
+/* GET all the rooms*/
+router.get('/get_rooms/', function(req, res, next) {
+  image.getRooms(req, res);
+});
+
 /* GET chat page. */
 router.get('/chat/:room/:user', function(req, res, next) {
   let room = req.params.room;
