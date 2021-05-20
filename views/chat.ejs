@@ -3,9 +3,7 @@
     <%- include("head") %>
     <body onload="init('<%= room %>','<%= user %>');">
         <div id="wrapper">
-            <div class="nav_bar">
-                <div id="title"><h1>AMK Chat</h1></div>
-            </div>
+            <%- include("nav") %>
             <div id="swap_alert" class="alert alert-info fixed-top m-2 shadow d-none" role="alert">
                 The image was swapped by <span id = "swapper_name"></span>
                 <button id="close_swap_alert" type="button" class="close" aria-label="Close">

@@ -60,8 +60,12 @@ a {
 
 #initial_form{
     margin-top:70px;
+    text-align: center;
+    display: inline-block;
 }
-
+.col-lg-6{
+    padding:0;
+}
 .form{
     max-width: 1200px !important;
     margin: 0 auto !important;
@@ -74,7 +78,15 @@ a {
     padding: 10px;
     margin: 10px 0;
 }
+#room_no{
+    display: inline-block;
+    max-width:calc(100% - 95px);
+}
 
+#room_no_generator{
+    width:90px;
+    margin:0;
+}
 .container::after {
     content: "";
     clear: both;
@@ -126,5 +138,9 @@ a {
 .btn-dark{
     width:200px;
     margin: 2%;
+}
+
+.form-group{
+    text-align: initial;
 }
 
