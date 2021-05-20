@@ -21,7 +21,7 @@ router.post('/save', function(req, res, next) {
   if (!fs.existsSync(dirPath)){
     fs.mkdirSync(dirPath);
   }
-  let directPath = "/private_access/images/" + req.body.title;
+  let directPath = "/private_access/images/" + req.body.roomNo + '_' + req.body.title;
   let imagePath = parent + directPath;
   fs.writeFile(imagePath, req.body.data, 'base64', err => {
     console.log(err);
@@ -29,7 +29,7 @@ router.post('/save', function(req, res, next) {
 
   let img = {
     roomNo: req.body.roomNo,
-    title: req.body.title,
+    title:  req.body.roomNo + '_' + req.body.title,
     author: req.body.author,
     description: req.body.description,
     url: directPath
