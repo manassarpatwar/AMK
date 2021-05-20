@@ -22,6 +22,7 @@ async function swapImage(roomNo){
     const imageBase64 = document.getElementById('image_base_64');
     let imageForm = document.getElementById('swap-image');
     const newImage = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+    // @todo save updated image in the database - what name and description?
     getCachedData(roomNo).then(data => {
         data.image = newImage;
         data.history = [];

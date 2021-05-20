@@ -211,7 +211,23 @@ function sendAjaxQuery(url, data, room, name) {
     location.assign('/chat/'+room+'/'+name);
 }
 
+function getImages(){
+    $.ajax({
+        url: '/get_images' ,
+        data: '',
+        dataType: 'json',
+        type: 'GET',
+        success: function (dataR) {
+            // @todo display all the images on the main page
+            let ret = dataR;
+            console.log(ret);
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error.message);
+        }
 
+    });
+}
 
 /**
  * it enables a pressed key 'enter' sends a message
