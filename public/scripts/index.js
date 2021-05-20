@@ -169,7 +169,7 @@ function validateForm() {
 
     // validate the image name
     let valid_title = true;
-    if (img_title === "" || (/^[<">\/*?:|]+$/i.test(img_title)))
+    if (img_title === "" || (/[<">\/*?:|]+/.test(img_title)))
         valid_title = false;
 
 
