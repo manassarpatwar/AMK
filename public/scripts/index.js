@@ -131,22 +131,26 @@ function createRoom() {
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
-    img_title = document.getElementById('img_title').value + ".png";
-    description = document.getElementById('description').value;
-    if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
-    const imageBase64 = document.getElementById('image_base_64');
-    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
-
-    let img = {
-        roomNo: roomNo,
-        title: img_title,
-        author: name,
-        description: description,
-        data: imageBase64.value.split(',')[1]
+    let img;
+    if (document.getElementById('joinRoom').style.display==='none') {
+        img_title = document.getElementById('img_title').value + ".png";
+        description = document.getElementById('description').value;
+        if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
+        const imageBase64 = document.getElementById('image_base_64');
+        const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+        img = {
+            roomNo: roomNo,
+            title: img_title,
+            author: name,
+            description: description,
+            data: imageBase64.value.split(',')[1]
+        }
+        storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
     }
-
-    storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
-
+    else {
+        img = null;
+        storeCachedData(roomNo, img, () => sendAjaxQuery('/save', img, roomNo, name));
+    }
 }
 
 /**
@@ -214,19 +218,21 @@ function validateFormJoin(){
  *
  */
 function sendAjaxQuery(url, data, room, name) {
-    $.ajax({
-        url: url ,
-        data: data,
-        dataType: 'json',
-        type: 'POST',
-        success: function (dataR) {
-            let ret = dataR;
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
 
-    });
+    if (data) {
+        $.ajax({
+            url: url,
+            data: data,
+            dataType: 'json',
+            type: 'POST',
+            success: function (dataR) {
+                let ret = dataR;
+            },
+            error: function (xhr, status, error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    }
     location.assign('/chat/'+room+'/'+name);
 }
 
