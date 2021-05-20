@@ -18,7 +18,7 @@ function scrollBottom(val){
             'html, body').get(0).scrollHeight
     }, val);
 }
-async function swapImage(roomNo){
+async function swapImage(roomNo, imgTitle, description){
     const imageBase64 = document.getElementById('image_base_64');
     let imageForm = document.getElementById('swap-image');
     const newImage = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
@@ -26,7 +26,9 @@ async function swapImage(roomNo){
     getCachedData(roomNo).then(data => {
         data.image = newImage;
         data.history = [];
-        data.annotations = [];        
+        data.annotations = [];     
+        data.title = imgTitle;
+        data.description = description;
         updateCachedData(data);
         canvas.updateBackground(newImage.base64);
         imageForm.style.display = 'none';
@@ -37,45 +39,59 @@ async function swapImage(roomNo){
 async function swapAndSendImage(roomNo, name) {
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
-    
+    const imgTitle = document.getElementById('img_title').value;
+    const description = document.getElementById('description').value;
+
     let img = {
         roomNo: roomNo,
-        title: img_title,
+        title: imgTitle,
         author: name,
         description: description,
         data: imageBase64.value.split(',')[1]
     }
 
-    if(url){
-        chat.emit('sendUrl', roomNo, url, name);
-        // @todo Send swapped image to server
-        // sendImage('')
-    }
-    swapImage(roomNo)
+    sendImage(img).then(() => chat.emit('sendUrl', roomNo, name, imgTitle, description, url))
+    swapImage(roomNo, imgTitle, description)
 }
 
-chat.on('sendUrl', function(roomNo, imageUrl, name){
-    console.log("inside chat.on");
+chat.on('sendUrl', function(roomNo, name, title, description, url){
     const imageBase64 = document.getElementById('image_base_64');
+    if(url){
+        $.ajax({
+            url: url,
+            cache: false,
+            xhrFields:{
+                responseType: 'blob'
+            },
+            success: function(blob){
+                convertToBase64(blob).then(data => {
+                    const base64 = data.result;
+                    imageBase64.value = base64;
+                    imageBase64.setAttribute("url", url);
+                    $('#swap_alert').removeClass('d-none');
+                    $('#swapper_name').html(name);
+                    $('#swapper_title').html(title);
+                    $('#swapper_description').html(description);
 
-    $.ajax({
-        url: imageUrl,
-        cache: false,
-        xhrFields:{
-            responseType: 'blob'
-        },
-        success: function(blob){
-            convertToBase64(blob).then(data => {
-                const base64 = data.result;
-                imageBase64.value = base64;
-                imageBase64.setAttribute("url", imageUrl);
-                $('#swap_alert').removeClass('d-none');
-                $('#swapper_name').html(name);
-                swapImage(roomNo)
-            });
-        },
-        error:function(){
-            
-        }
-    });
+                    swapImage(roomNo, title, description)
+                });
+            },
+            error:function(){
+                
+            }
+        });
+    }else{
+        getImage(roomNo).then(function(data){
+            console.log(data)
+            const base64 = data['base64'];
+            imageBase64.value = base64;
+            imageBase64.setAttribute("url", "");
+            $('#swap_alert').removeClass('d-none');
+            $('#swapper_name').html(name);
+            $('#swapper_title').html(title);
+            $('#swapper_description').html(description);
+
+            swapImage(roomNo, title, description)
+        })
+    }
 });

@@ -3,7 +3,7 @@ let name = null;
 let roomNo = null;
 let socket = null;
 let canvas = null;
-let img_title = null;
+let imgTitle = null;
 let description = null;
 let chat= io.connect('/chat');
 
@@ -124,7 +124,7 @@ function connectToRoom(room, user) {
         if(cachedData.image){
             canvas = new Canvas(chat, cachedData.image.base64, roomNo);
         }else{
-            getImage(room, function(data){
+            getImage(room).then(function(data){
                 canvas = new Canvas(chat, data['base64'], roomNo);
             })
         }
@@ -138,19 +138,19 @@ function createRoom() {
     name = document.getElementById('name').value;
     let img;
     if (document.getElementById('joinRoom').style.display==='none') {
-        img_title = document.getElementById('img_title').value + ".png";
+        imgTitle = document.getElementById('img_title').value;
         description = document.getElementById('description').value;
         if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
         const imageBase64 = document.getElementById('image_base_64');
         const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
         img = {
             roomNo: roomNo,
-            title: img_title,
+            title: imgTitle,
             author: name,
             description: description,
             data: imageBase64.value.split(',')[1]
         }
-        storeCachedData(roomNo, {image}, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
+        storeCachedData(roomNo, {image, title: imgTitle, description: description}, () => sendImage(img).then(() => location.assign('/chat/'+roomNo+'/'+name)));
     }
     else {
         img = null;
@@ -167,7 +167,7 @@ function validateFormCreate() {
     let roomNo= document.getElementById('room_no').value
     const anonymous = document.getElementById('checkAnonymous');
     let canvas_style = document.getElementById('preview_canvas').style.display;
-    let img_title = document.getElementById('img_title').value ;
+    let imgTitle = document.getElementById('img_title').value ;
     let description = document.getElementById('description').value;
     if (anonymous.checked){
         document.getElementById('name').value = "";
@@ -175,7 +175,7 @@ function validateFormCreate() {
 
     // validate the image name
     let valid_title = true;
-    if (img_title === "" || (/[<">\/*?:|]+/.test(img_title)))
+    if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
         valid_title = false;
 
     if (roomNo  === "" || (name === "" && !anonymous.checked) || canvas_style === "none" || !valid_title || description === "") {
@@ -222,21 +222,20 @@ function validateFormJoin(){
  * the uploaded image in the MongoDB
  *
  */
-function sendImage(data, callback) {
-  if (data) {
-    $.ajax({
-        url: '/save',
-        data: data,
-        type: 'POST',
-        success: function (dataR) {
-            callback()
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
-
-    });
-  }
+function sendImage(imageData) {
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            url: '/save',
+            data: imageData,
+            type: 'POST',
+            success: function (data) {
+                resolve(data)
+            },
+            error: function (xhr, status, error) {
+                reject({'error': error.message});
+            }
+        });
+    })
 }
 
 function getImages(){
@@ -254,17 +253,19 @@ function getImages(){
     });
 }
 
-function getImage(room, callback){
-    $.ajax({
-        url: '/image/'+room,
-        type: 'GET',
-        success: function (data) {
-            callback(data)
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
-    });
+function getImage(room){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            url: '/image/'+room,
+            type: 'GET',
+            success: function (data) {
+                resolve(data)
+            },
+            error: function (xhr, status, error) {
+                reject({'error: ': error.message});
+            }
+        });
+    })
 }
 
 /**
@@ -388,6 +389,22 @@ window.addEventListener('online', function(e) {
     // Resync data with server.
     console.log("You are online");
     hideOfflineWarning();
+    const imageBase64 = document.getElementById('image_base_64');
+
+    getCachedData(roomNo).then(cachedData => {
+        if(cachedData){
+            const title = cachedData.title
+            const description = cachedData.description
+            let img = {
+                roomNo: roomNo,
+                title: title,
+                author: name,
+                description: description,
+                data: imageBase64.value.split(',')[1]
+            }
+            sendImage(img)
+        }
+    });
 }, false);
 
 
