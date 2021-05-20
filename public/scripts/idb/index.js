@@ -1,6 +1,3 @@
-import { w as wrap, r as replaceTraps } from "./wrap-idb-value.js?module";
-export { u as unwrap, w as wrap } from "./wrap-idb-value.js?module";
-
 /**
 * Open a database.
 *
@@ -83,6 +80,3 @@ replaceTraps(oldTraps => ({
   ...oldTraps,
   get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
   has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop) }));
-
-
-export { deleteDB, openDB };
