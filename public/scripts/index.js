@@ -3,6 +3,8 @@ let name = null;
 let roomNo = null;
 let socket = null;
 let canvas = null;
+let img_title = null;
+let description = null;
 let chat= io.connect('/chat');
 
 
@@ -132,15 +134,15 @@ function createRoom() {
     const anonymous = document.getElementById('checkAnonymous');
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
-    name = document.getElementById('name').value
-    let title = document.getElementById('img_title').value + ".png";
-    let description = document.getElementById('description').value
+    name = document.getElementById('name').value;
+    img_title = document.getElementById('img_title').value + ".png";
+    description = document.getElementById('description').value;
     if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
     const imageBase64 = document.getElementById('image_base_64');
     const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
 
     let img = {
-        title: title,
+        title: img_title,
         author: name,
         description: description,
         data: imageBase64.value.split(',')[1]
@@ -159,19 +161,37 @@ function validateForm() {
     let roomNo= document.getElementById('room_no').value
     const anonymous = document.getElementById('checkAnonymous');
     let canvas_style = document.getElementById('preview_canvas').style.display;
+    let img_title = document.getElementById('img_title').value ;
+    let description = document.getElementById('description').value;
     if (anonymous.checked){
         document.getElementById('name').value = "";
     }
-    if (roomNo  ==="" || (name ==="" && !anonymous.checked) || canvas_style === "none") {
+
+    // validate the image name
+    let valid_title = true;
+    if (img_title === "" || (/^[<">\/*?:|]+$/i.test(img_title)))
+        valid_title = false;
+
+
+    if (roomNo  === "" || (name === "" && !anonymous.checked) || canvas_style === "none" || !valid_title || description === "") {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
+        if (!valid_title)
+            document.getElementById("valid_form_image_name").style.display = "block";
+
     }
     else{
         document.getElementById("connect_btn").disabled = false;
         document.getElementById("valid_form_help").style.display = "none";
+        document.getElementById("valid_form_image_name").style.display = "none";
     }
 }
 
+/**
+ * sends post request to save file locally and store the path and the details of
+ * the uploaded image in the MongoDB
+ *
+ */
 function sendAjaxQuery(url, data, room, name) {
     console.log("send")
     $.ajax({
@@ -180,13 +200,7 @@ function sendAjaxQuery(url, data, room, name) {
         dataType: 'json',
         type: 'POST',
         success: function (dataR) {
-            // no need to JSON parse the result, as we are using
-            // dataType:json, so JQuery knows it and unpacks the
-            // object for us before returning it
             let ret = dataR;
-            // in order to have the object printed by alert
-            // we need to JSON stringify the object
-            // document.getElementById('results').innerHTML= JSON.stringify(ret);
             console.log(ret);
         },
         error: function (xhr, status, error) {

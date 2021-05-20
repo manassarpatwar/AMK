@@ -35,7 +35,10 @@
             </div>
             <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="createRoom()" class="btn btn-primary" value="Connect"/>
             <div id="valid_form_help">
-                <small disabled class="form-text text-muted">You must provide the room id and your name.</small>
+                <small disabled class="form-text text-muted">You must fill in all the fields.</small>
+            </div>
+            <div id="valid_form_image_name">
+                <small disabled class="form-text text-muted">The image name cannot contain: <">\/*?:|.</small>
             </div>
         </form>
     </div>
