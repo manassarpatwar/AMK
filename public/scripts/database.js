@@ -1,6 +1,6 @@
 ////////////////// DATABASE //////////////////
 // the database receives from the server the following structure
-let db;
+let indexed_db;
 
 const IMAGE_DB_NAME= 'AMK_DB';
 const IMAGE_STORE_NAME= 'AMK_DB_STORE';
@@ -9,8 +9,8 @@ const IMAGE_STORE_NAME= 'AMK_DB_STORE';
  * it inits the database
  */
 async function initDatabase(){
-    if (!db) {
-        db = await openDB(IMAGE_DB_NAME, 2, {
+    if (!indexed_db) {
+        indexed_db = await openDB(IMAGE_DB_NAME, 2, {
             upgrade(upgradeDb, oldVersion, newVersion) {
                 if (!upgradeDb.objectStoreNames.contains(IMAGE_STORE_NAME)) {
                     let AMK_DB = upgradeDb.createObjectStore(IMAGE_STORE_NAME, {
@@ -32,11 +32,11 @@ window.initDatabase= initDatabase;
  */
 async function storeCachedData(room, data, callback) {
     console.log('inserting: ');
-    if (!db)
+    if (!indexed_db)
         await initDatabase();
-    if (db) {
+    if (indexed_db) {
         try{
-            let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
+            let tx = await indexed_db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
             await store.put({room, ...data});
             await tx.done;
@@ -59,12 +59,12 @@ window.storeCachedData= storeCachedData;
  * @returns {*}
  */
 async function getCachedData(room) {
-    if (!db)
+    if (!indexed_db)
         await initDatabase();
-    if (db) {
+    if (indexed_db) {
         try {
             console.log('fetching: ' + room);
-            let tx = await db.transaction(IMAGE_STORE_NAME, 'readonly');
+            let tx = await indexed_db.transaction(IMAGE_STORE_NAME, 'readonly');
             let store = await tx.objectStore(IMAGE_STORE_NAME);
             let index = await store.index('room');
             let roomData = await index.get(IDBKeyRange.only(room));
@@ -87,11 +87,11 @@ window.getCachedData= getCachedData;
  */
 async function updateCachedData(data) {
     console.log('inserting: ');
-    if (!db)
+    if (!indexed_db)
         await initDatabase();
-    if (db) {
+    if (indexed_db) {
         try{
-            let tx = await db.transaction([IMAGE_STORE_NAME], "readwrite");
+            let tx = await indexed_db.transaction([IMAGE_STORE_NAME], "readwrite");
             let store = await tx.objectStore(IMAGE_STORE_NAME);
             await store.put(data);
             await tx.complete;
