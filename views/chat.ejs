@@ -64,6 +64,27 @@
                     </div>
                 </div>
             </div>
+            <h1>Search the Knowledge Graph</h1>
+            <div class="myRow" id="typeForm">
+                <label for="myType">Type: </label><input type="text" id="myType">
+                <button onclick="widgetInit()">Set type</button>
+            </div>
+            <div class="myRow" id='widget' style="display: none">
+                <label for="myInput">Search for: </label><input type="text" id="myInput">
+                <div class="myRow" id="typeSet"></div>
+            </div>
+            <div>
+                <div class='resultPanel' id="resultPanel" style="display: none">
+                    <h3 id="resultName"></h3>
+                    <h4 id="resultId"></h4>
+                    <div id="resultDescription"></div>
+                    <div>
+                        <a id="resultUrl" target="_blank">
+                            Link to Webpage
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
