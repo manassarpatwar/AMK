@@ -121,8 +121,13 @@ function connectToRoom(room, user) {
             cachedData = {};
             storeCachedData(roomNo, cachedData)
         }
-        const base64 = cachedData.image ? cachedData.image.base64 : null;
-        canvas = new Canvas(chat, base64, roomNo);
+        if(cachedData.image){
+            canvas = new Canvas(chat, cachedData.image.base64, roomNo);
+        }else{
+            getImage(room, function(data){
+                canvas = new Canvas(chat, data['base64'], roomNo);
+            })
+        }
     });
 }
 
@@ -145,11 +150,11 @@ function createRoom() {
             description: description,
             data: imageBase64.value.split(',')[1]
         }
-        storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
+        storeCachedData(roomNo, {image}, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
     }
     else {
         img = null;
-        storeCachedData(roomNo, img, () => sendAjaxQuery('/save', img, roomNo, name));
+        storeCachedData(roomNo, img, () => sendImage(img, () => location.assign('/chat/'+roomNo+'/'+name)));
     }
 }
 
@@ -217,28 +222,26 @@ function validateFormJoin(){
  * the uploaded image in the MongoDB
  *
  */
-function sendAjaxQuery(url, data, room, name) {
+function sendImage(data, callback) {
+  if (data) {
+    $.ajax({
+        url: '/save',
+        data: data,
+        type: 'POST',
+        success: function (dataR) {
+            callback()
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error.message);
+        }
 
-    if (data) {
-        $.ajax({
-            url: url,
-            data: data,
-            dataType: 'json',
-            type: 'POST',
-            success: function (dataR) {
-                let ret = dataR;
-            },
-            error: function (xhr, status, error) {
-                alert('Error: ' + error.message);
-            }
-        });
-    }
-    location.assign('/chat/'+room+'/'+name);
+    });
+  }
 }
 
 function getImages(){
     $.ajax({
-        url: '/get_images' ,
+        url: '/images' ,
         data: '',
         dataType: 'json',
         type: 'GET',
@@ -248,7 +251,19 @@ function getImages(){
         error: function (xhr, status, error) {
             alert('Error: ' + error.message);
         }
+    });
+}
 
+function getImage(room, callback){
+    $.ajax({
+        url: '/image/'+room,
+        type: 'GET',
+        success: function (data) {
+            callback(data)
+        },
+        error: function (xhr, status, error) {
+            alert('Error: ' + error.message);
+        }
     });
 }
 

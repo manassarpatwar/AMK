@@ -37,8 +37,19 @@ async function swapImage(roomNo){
 async function swapAndSendImage(roomNo, name) {
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
+    
+    let img = {
+        roomNo: roomNo,
+        title: img_title,
+        author: name,
+        description: description,
+        data: imageBase64.value.split(',')[1]
+    }
+
     if(url){
         chat.emit('sendUrl', roomNo, url, name);
+        // @todo Send swapped image to server
+        // sendImage('')
     }
     swapImage(roomNo)
 }

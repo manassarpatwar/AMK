@@ -39,11 +39,11 @@ router.post('/save', function(req, res, next) {
 });
 
 /* GET all images from the database*/
-router.get('/get_images', function(req, res, next) {
+router.get('/images', function(req, res, next) {
   image.getAll(req, res);
 });
 
-router.get('/get_image_by_room/:roomNo', function(req, res, next) {
+router.get('/image/:roomNo', function(req, res, next) {
   let data = {roomNo: req.params.roomNo};
   image.getByRoom(data, res);
 });
