@@ -191,7 +191,7 @@ function validateFormCreate() {
   let name = document.getElementById('name').value;
   let roomNo= document.getElementById('room_no').value
   const anonymous = document.getElementById('checkAnonymous');
-  let canvas_style = document.getElementById('preview_canvas').style.display;
+  let canvasStyle = document.getElementById('preview_canvas').style.display;
   let imgTitle = document.getElementById('img_title').value ;
   let description = document.getElementById('description').value;
   if (anonymous.checked){
@@ -199,14 +199,14 @@ function validateFormCreate() {
   }
 
   // validate the image name - can't contain any special characters
-  let valid_title = true;
+  let validTitle = true;
   if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
-    valid_title = false;
+    validTitle = false;
 
-  if (roomNo  === "" || (name === "" && !anonymous.checked) || canvas_style === "none" || !valid_title || description === "") {
+  if (roomNo  === "" || (name === "" && !anonymous.checked) || canvasStyle === "none" || !validTitle || description === "") {
     document.getElementById("connect_btn").disabled = true;
     document.getElementById("valid_form_help").style.display = "block";
-    if (!valid_title)
+    if (!validTitle)
       document.getElementById("valid_form_image_name").style.display = "block";
   }
   else{

@@ -118,20 +118,20 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
  * validates all the fields in the swap images form
  */
 function validateSwapForm(){
-  let canvas_style = document.getElementById('preview_canvas').style.display;
+  let canvasStyle = document.getElementById('preview_canvas').style.display;
   let imgTitle = document.getElementById('img_title').value ;
   let description = document.getElementById('description').value;
 
 
   // validate the image name - can't contain any special characters
-  let valid_title = true;
+  let validTitle = true;
   if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
-    valid_title = false;
+    validTitle = false;
 
-  if (canvas_style === "none" || !valid_title || description === "") {
+  if (canvasStyle === "none" || !validTitle || description === "") {
     document.getElementById("submitSwapped").disabled = true;
     document.getElementById("valid_form_help").style.display = "block";
-    if (!valid_title)
+    if (!validTitle)
       document.getElementById("valid_form_image_name").style.display = "block";
     else
       document.getElementById("valid_form_image_name").style.display = "none";
