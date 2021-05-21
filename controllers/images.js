@@ -8,7 +8,9 @@ function convertToBase64(file){
     return 'data:image/jpeg;base64,'+fs.readFileSync(file, 'base64')
 }
 
-
+/**
+ * saves image to mongoDB
+ */
 exports.insert = function (req, res) {
     console.log("inside insert")
     let userData = req;
@@ -39,6 +41,9 @@ exports.insert = function (req, res) {
     }
 }
 
+/**
+ * returns the list of all images stored in MongoDB
+ */
 exports.getAll = function (req, res) {
     try {
         Image.find({},
@@ -56,6 +61,11 @@ exports.getAll = function (req, res) {
     }
 }
 
+/**
+ * gets the last (most up to date) image saved in a given room,
+ * based on the path, gets base64,
+ * returns the image data * @param userData room  number
+ */
 exports.getByRoom = function (userData, res) {
     try {
         Image.find({roomNo: userData.roomNo},
@@ -64,9 +74,11 @@ exports.getByRoom = function (userData, res) {
                 if (err)
                     res.status(500).send('Invalid data!');
 
-                const image = images[0];
-                const url = path.resolve(__dirname, '..'+image['url']);
+                let image = []
+                if (images.length >= 1)
+                    image = images[images.length - 1];
 
+                const url = path.resolve(__dirname, '..'+image['url']);
                 const base64 = convertToBase64(url)
                 const imageData = {}
                 imageData['title'] = image['title']
@@ -81,6 +93,12 @@ exports.getByRoom = function (userData, res) {
     }
 }
 
+/**
+ * gets the image with a given id
+ * based on the path, gets base64,
+ * returns the image data
+ * @param userData image id
+ */
 exports.getById = function (userData, res) {
     try {
         Image.find({_id: userData._id},
@@ -106,6 +124,9 @@ exports.getById = function (userData, res) {
     }
 }
 
+/**
+ * gets the list of all the rooms based on the saved pictures in mongoDB
+ */
 exports.getRooms = function (req, res) {
     try {
         Image.find({},

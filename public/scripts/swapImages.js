@@ -1,17 +1,7 @@
 function inputImage(){
-    // inserting from database only in the main page
-    document.getElementById("choose_picture").style.display = "none";
-    const inputWrapper= document.getElementById('input_wrapper');
-    const imageForm = document.getElementById('swap-image');
-    if (imageForm.style.display !== 'none') {
-        imageForm.style.display = 'none';
-        inputWrapper.style.height = '0px';
-    }
-    else {
-        imageForm.style.display = 'block';
-        scrollBottom(50);
-        inputWrapper.style.height = '120px';
-    }
+   const imageForm = document.getElementById('swap-image');
+   $('#myModal').modal('show');
+   imageForm.style.display = 'block';
 }
 
 function scrollBottom(val){
@@ -38,11 +28,18 @@ async function swapImage(roomNo, imgTitle, description){
     });
 }
 
+function closeModal(){
+    $('#myModal').modal('hide');
+    document.getElementById('img_title').value = "";
+    document.getElementById('description').value = "";
+}
+
 async function swapAndSendImage(roomNo, name) {
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
     const imgTitle = document.getElementById('img_title').value;
     const description = document.getElementById('description').value;
+    closeModal();
 
     let img = {
         roomNo: roomNo,
@@ -97,3 +94,29 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
         })
     }
 });
+
+function validateSwapForm(){
+    let canvas_style = document.getElementById('preview_canvas').style.display;
+    let imgTitle = document.getElementById('img_title').value ;
+    let description = document.getElementById('description').value;
+
+
+    // validate the image name - can't contain any special characters
+    let valid_title = true;
+    if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
+        valid_title = false;
+
+    if (canvas_style === "none" || !valid_title || description === "") {
+        document.getElementById("submitSwapped").disabled = true;
+        document.getElementById("valid_form_help").style.display = "block";
+        if (!valid_title)
+            document.getElementById("valid_form_image_name").style.display = "block";
+        else
+            document.getElementById("valid_form_image_name").style.display = "none";
+    }
+    else{
+        document.getElementById("submitSwapped").disabled = false;
+        document.getElementById("valid_form_help").style.display = "none";
+        document.getElementById("valid_form_image_name").style.display = "none";
+    }
+}
