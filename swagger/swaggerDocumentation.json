@@ -1,0 +1,235 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+      "version": "1.0.0",
+      "title": "AMK",
+      "description": "AMK chat app",
+      "termsOfService": "http://api_url/terms/",
+      "license": {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000/",
+        "description": "Local server"
+      }
+    ],
+    "paths": {
+      "/rooms": {
+        "get": {
+          "tags": [
+            "getting all rooms"
+          ],
+          "description": "getting all rooms - All the rooms saved in mongoDB",
+          "operationId": "allRooms",
+          "responses": {
+            "200": {
+              "description": "Get request successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Room"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Get request unsuccessful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "message": "Get request unsuccessful",
+                    "internal_code": "internal_server_error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/imageById/:id": {
+        "get": {
+          "parameters": [
+            {
+               "in": "path",
+               "name": "id",
+               "required": true,
+               "schema": {
+                  "type": "string",
+                  "example": "60a729160553020e9418b8ce"
+               },
+               "description": "The image ID"
+            }
+          ],
+          "tags": [
+            "getting image by id"
+          ],
+          "description": "getting image by id - Get image by id saved in mongoDB",
+          "operationId": "tmageById",
+          "responses": {
+            "200": {
+              "description": "Correct Image id provided",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Image"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing parameters",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "message": "no id provided",
+                    "internal_code": "missing_parameters"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/imageByRoom/:roomNo": {
+        "get": {
+          "parameters": [
+            {
+               "in": "path",
+               "name": "roomNo",
+               "required": true,
+               "schema": {
+                  "type": "string",
+                  "example": "R10050"
+               },
+               "description": "The room number"
+            }
+          ],
+          "tags": [
+            "getting image by room number"
+          ],
+          "description": "getting image by room number - Get image by roomNo saved in mongoDB",
+          "operationId": "imageById",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Correct Image room number provided",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Image"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Missing parameters",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "message": "no room number provided",
+                    "internal_code": "missing_parameters"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/images": {
+        "get": {
+          "tags": [
+            "getting all images"
+          ],
+          "description": "getting all images - Get all images saved in mongoDB",
+          "operationId": "allImages",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageUrl"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Get request successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ImageUrl"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Get request ynsuccessful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "message": "Get request unsuccessful",
+                    "internal_code": "internal_server_error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "image": {
+          "type": "object",
+          "description": "Saved image json in mongodb",
+          "example": "{title: 'image.png', author: 'somename', description: 'some description', base64: 'ni1ugi5oub12....'}"
+        },
+        "ImageUrl": {
+          "type": "string",
+          "description": "Saved image url in mongodb",
+          "example": "private_access/images/R5011_someimage.png"
+        },
+        "Room": {
+          "type": "string",
+          "example": "R10050"
+        },
+        "Error": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            },
+            "internal_code": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  

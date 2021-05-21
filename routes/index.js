@@ -8,7 +8,6 @@ initDB.init();
 
 /* GET home page. */
 /**
- * @swagger
  * /:
  *   get:
  *     description: Home page
@@ -69,7 +68,6 @@ router.get('/rooms', function(req, res, next) {
 
 /* GET chat page. */
 /**
- * @swagger
  * /chat/:room/:user
  *   get:
  *     description: Chat with username

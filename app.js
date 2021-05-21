@@ -9,29 +9,9 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-const swaggerJsdoc = require('swagger-jsdoc');
-
-const options = {
-  definition: {
-    "openapi": "3.0.2",
-    "info": {
-      "version": "1.0.0",
-      "title": "AMK",
-      "description": "AMK chat app",
-    },
-    "servers": [
-      {
-        "url": "http://localhost:3000/",
-        "description": "Local server"
-      }
-    ],
-  },
-  apis: ['routes/index.js'], // files containing annotations as above
-};
-
-const swaggerDocument = swaggerJsdoc(options);
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json');
 const swaggerUi = require('swagger-ui-express');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation));
 
 
 // view engine setup
