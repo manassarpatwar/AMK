@@ -47,9 +47,9 @@ async function storeCachedData(room, data, callback) {
     }
     else localStorage.setItem(room, JSON.stringify(data));
 
-    if(callback){
-        callback();
-    }
+  if(callback){
+    callback();
+  }
 }
 window.storeCachedData= storeCachedData;
 

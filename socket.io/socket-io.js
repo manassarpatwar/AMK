@@ -18,15 +18,15 @@ exports.init = function(io) {
           });
 
           socket.on('draw', function(data) {
-              socket.to(data.room).emit('draw', data)
+            socket.to(data.room).emit('draw', data)
           });
 
           socket.on('sendUrl', function(room, name, imgTitle, description, url) {
-              socket.to(room).emit('sendUrl', room, name, imgTitle, description, url)
+            socket.to(room).emit('sendUrl', room, name, imgTitle, description, url)
           });
 
           socket.on('clear', function(room) {
-              socket.to(room).emit('clear')
+            socket.to(room).emit('clear')
           });
 
           socket.on('disconnect', function(){
