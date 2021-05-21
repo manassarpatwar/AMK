@@ -16,13 +16,14 @@
                     <img id="image" width="40%">
                     <canvas  id="canvas"></canvas>
                 </div>
-            <div class="boxed" >
-                <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
-                <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
-                <div id="history" class="container">
-                    <br/>
+            <div style="width:100%">
+                <div class="boxed" >
+                    <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
+                    <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                    <div id="history" class="container">
+                        <br/>
+                    </div>
                 </div>
-            </div>
                 <div id="input_wrapper">
                     <div id="input" class="boxed">
                         <form id="chat_form" onsubmit="return false;">
@@ -49,22 +50,23 @@
                 </div>
             </div>
             <div id="knowledgeGraph">
-                <h2>Add Knowledge Graph annotation: </h2>
-                <div class="myRow" id="typeForm">
-                    <label for="myType">Type: </label><input type="text" id="myType">
-                    <button onclick="widgetInit()">Set type</button>
-                </div>
-                <div class="myRow" id='widget' style="display: none">
-                    <label for="myInput">Search for: </label><input type="text" id="myInput">
-                    <p class="myRow" id="typeSet"></p>
-                </div>
-                <button onclick="adjustType()" id="adjustType" style="display: none;">Change type</button>
-                <div>
-                    <div class='resultPanel' id="resultPanel">
-                        <h3 id=""> Knowledge Graph annotations: </h3>
-
+                <div id="graph" style="display:none;">
+                    <div class="myRow" id="typeForm">
+                        <label for="myType">Type: </label><input type="text" id="myType">
+                        <button class="btn btn-outline-secondary" onclick="widgetInit()">Set type</button>
+                    </div>
+                    <div class="myRow" id='widget' style="display: none">
+                        <label for="myInput">Search for: </label><input type="text" id="myInput">
+                        <p class="myRow" id="typeSet"></p>
+                    </div>
+                    <button class="btn btn-outline-secondary" onclick="adjustType()" id="adjustType" style="display: none;">Change type</button>
+                    <div>
+                        <div class='resultPanel' id="resultPanel">
+                            <p></p>
+                        </div>
                     </div>
                 </div>
+                <button type="button" onclick='showGraph()' class="btn btn-dark mb-2" style='width: 260px; margin: 0; display: inline-block;'>Add Knowledge Graph annotation</button>
             </div>
         </div>
 

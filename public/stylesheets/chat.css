@@ -7,6 +7,10 @@
     background-color: white;
 }
 
+#adjustType{
+    margin: 0 auto;
+}
+
 .boxed {
     padding:10px;
     box-sizing: border-box;
@@ -74,6 +78,8 @@
 
 #knowledgeGraph {
     margin-top: 20px;
+    margin-bottom:50px;
+    text-align: center;
 }
 
 @media only screen and (max-width: 600px) {

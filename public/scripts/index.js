@@ -466,3 +466,15 @@ function joinRoomShow(){
   document.getElementById('room_no').style.maxWidth = 'none';
   window.scrollTo(0,0);
 }
+
+function showGraph(){
+  if (document.getElementById('graph').style.display==='none') {
+    document.getElementById('graph').style.display = 'block';
+    document.getElementById('resultPanel').style.display = 'block';
+  }
+  else {
+    document.getElementById('graph').style.display = 'none';
+    document.getElementById('resultPanel').style.display = 'none';
+  }
+
+}
