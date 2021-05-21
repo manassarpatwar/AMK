@@ -250,7 +250,6 @@ async function showImage(){
     const imageBase64 = document.getElementById('image_base_64');
     imageBase64.value = image.base64;
     preview(image.base64);
-
 }
 
 /**
@@ -361,10 +360,12 @@ function hideImageUrlInput(){
 }
 
 function showImageUrlInput(){
+    console.log("showImageUrlInput");
     imageUrl = document.getElementById('image_url');
     imageUrlGroup = document.getElementById('image_url_group');
     stopImageCapture();
     clearPreview(imageUrl.value);
+    imageUrl.style.display = 'block';
     imageUrlGroup.style.display = 'flex';
 }
 

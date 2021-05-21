@@ -31,6 +31,10 @@
     bottom: 0;
 }
 
+#submit_image_url{
+    max-width: 50px;
+}
+
 #input{
     top: 0px;
     left: 0px;
@@ -45,6 +49,9 @@
     position: fixed;
     bottom: 0;
 }
+#player{
+    max-width: 300px;
+}
 #swap-image{
     padding-bottom: 3%;
     background-color: white;
@@ -53,5 +60,8 @@
 @media only screen and (max-width: 600px) {
     #drawing_board{
         width:100%
+    }
+    #image{
+        min-width: 80vw;
     }
 }

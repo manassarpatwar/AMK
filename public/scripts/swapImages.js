@@ -1,18 +1,12 @@
 function inputImage(){
     // inserting from database only in the main page
-    document.getElementById("choose_picture").style.display = "none";
-    const inputWrapper= document.getElementById('input_wrapper');
-    const imageForm = document.getElementById('swap-image');
-    if (imageForm.style.display !== 'none') {
-        imageForm.style.display = 'none';
-        inputWrapper.style.height = '0px';
-    }
-    else {
+    //document.getElementById("choose_picture").style.display = "none";
+   // const inputWrapper= document.getElementById('input_wrapper');
+   const imageForm = document.getElementById('swap-image');
+        $('#myModal').modal('show');
         imageForm.style.display = 'block';
-        scrollBottom(50);
-        inputWrapper.style.height = '120px';
-    }
 }
+
 
 function scrollBottom(val){
     $("html, body").animate({
@@ -38,7 +32,14 @@ async function swapImage(roomNo, imgTitle, description){
     });
 }
 
+function closeModal(){
+    $('#myModal').modal('hide');
+    document.getElementById('img_title').value = "";
+    document.getElementById('description').value = "";
+}
+
 async function swapAndSendImage(roomNo, name) {
+    closeModal();
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
     const imgTitle = document.getElementById('img_title').value;
