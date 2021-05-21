@@ -48,7 +48,7 @@ async function swapAndSendImage(roomNo, name) {
 }
 
 /**
- * given the parameters, it swaps the image in the chat for both users
+ * given the parameters, it swaps the image in the chat for the current user
  * @param roomNo
  * @param imgTitle
  * @param description
@@ -71,7 +71,13 @@ async function swapImage(roomNo, imgTitle, description){
 }
 
 /**
- *
+ * This socket.io event is fired for all the other users except the user who swapped the image
+ * Ajax is used to fetch the image. If url is provided, Ajax fetches the blob of the provided url.
+ * else Ajax send a request to mongodb and fetches the swapped image
+ * @param roomNo
+ * @param imgTitle
+ * @param description
+ * @param url
  */
 chat.on('sendUrl', function(roomNo, name, title, description, url){
   const imageBase64 = document.getElementById('image_base_64');
@@ -87,6 +93,8 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
           const base64 = data.result;
           imageBase64.value = base64;
           imageBase64.setAttribute("url", url);
+          
+          // Swap alert
           $('#swap_alert').removeClass('d-none');
           $('#swapper_name').html(name);
           $('#swapper_title').html(title);
@@ -105,6 +113,8 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
       const base64 = data['base64'];
       imageBase64.value = base64;
       imageBase64.setAttribute("url", "");
+
+      // Swap alert
       $('#swap_alert').removeClass('d-none');
       $('#swapper_name').html(name);
       $('#swapper_title').html(title);
@@ -114,6 +124,7 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
     })
   }
 });
+
 /**
  * validates all the fields in the swap images form
  */
