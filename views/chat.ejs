@@ -49,33 +49,32 @@
                 </div>
             </div>
         </div>
-                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
+
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">Swap an image</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
-                      </div>
-                      <div class="modal-body">
-                       <div id="swap-image" style="display: none; margin-right: 25px; text-align:center;">
-                            <form onsubmit="return false;" onchange="validateSwapForm()">
-                            <%- include("imageForm") %>
-                            <div id="valid_form_help">
-                                <small disabled class="form-text text-muted">You must fill in all the fields.</small>
+                    </div>
+                    <form onsubmit="return false;" onchange="validateSwapForm()">
+                        <div class="modal-body">
+                            <div id="swap-image" style="display: none; margin-right: 25px; text-align:center;">
+                                <%- include("imageForm") %>
+                                <div id="valid_form_help">
+                                    <small disabled class="form-text text-muted">You must fill in all the fields.</small>
+                                </div>
                             </div>
                         </div>
-
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="submitSwapped" disabled = "true" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')"/>Swap</button>
-                      </div>
-                      </form>
-                    </div>
-                  </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="submitSwapped" disabled = "true" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')"/>Swap</button>
+                        </div>
+                    </form>
                 </div>
-            </body>
+            </div>
+        </div>
     </body>
 </html>

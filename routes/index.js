@@ -6,8 +6,6 @@ const image = require('../controllers/images');
 const initDB= require('../controllers/init');
 initDB.init();
 
-
-
 /* GET home page. */
 /**
  * @swagger
