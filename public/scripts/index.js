@@ -403,17 +403,26 @@ function widgetInit(){
  * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
  */
 function selectItem(event){
-    let row= event.row;
+    let row = event.row;
     // @todo save row inside indexedDb
     // document.getElementById('resultImage').src= row.json.image.url;
-    let current_result = document.getElementById('resultPanel').innerText;
-    let newDiv = '<div><h4><a>Some text</a></h4> </div>';
-    document.getElementById('resultPanel').innerText= current_result + newDiv;
-    // document.getElementById('resultId').innerText= 'id: '+row.id;
-    // document.getElementById('resultName').innerText= row.name;
-    // document.getElementById('resultDescription').innerText= row.rc;
-    // document.getElementById("resultUrl").href= row.qc;
-    // document.getElementById('resultPanel').style.display= 'block';
+    let results = document.getElementById('resultPanel');
+    let result = document.createElement('div');
+
+    let name = document.createElement('h4');
+    name.innerText = row.name;
+    result.appendChild(name);
+
+    let description = document.createElement('p');
+    description.innerText = row.rc;
+    result.appendChild(description);
+
+    let link = document.createElement("a");
+    link.innerText = "see more..."
+    link.href = row.qc;
+    result.appendChild(link);
+
+    results.appendChild(result);
 }
 
 $(function() {
