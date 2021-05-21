@@ -1,6 +1,10 @@
+// based on: https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
-// https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/
+
+// instead of storing base64 in the database,
+// it stores the relative path to the image saved in the system's private folder
+
 let Image = new Schema(
     {
       roomNo: {type: String, required: true, max: 100},

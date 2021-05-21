@@ -1,3 +1,6 @@
+/**
+ * opens the form to swap the image
+ */
 function inputImage(){
   const imageForm = document.getElementById('swap-image');
   $('#myModal').modal('show');
@@ -10,30 +13,21 @@ function scrollBottom(val){
         'html, body').get(0).scrollHeight
   }, val);
 }
-async function swapImage(roomNo, imgTitle, description){
-  const imageBase64 = document.getElementById('image_base_64');
-  let imageForm = document.getElementById('swap-image');
-  const newImage = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
-  // @todo save updated image in the database - what name and description?
-  getCachedData(roomNo).then(data => {
-    data.image = newImage;
-    data.history = [];
-    data.annotations = [];
-    data.title = imgTitle;
-    data.description = description;
-    updateCachedData(data);
-    canvas.updateBackground(newImage.base64);
-    imageForm.style.display = 'none';
-    clearHistory();
-  });
-}
 
+/**
+ * clears and close the form for image swapping
+ */
 function closeModal(){
   $('#myModal').modal('hide');
   document.getElementById('img_title').value = "";
   document.getElementById('description').value = "";
 }
 
+/**
+ * saves the image in the databases and calls swapImage to swap image in the chat
+ * @param roomNo
+ * @param name
+ */
 async function swapAndSendImage(roomNo, name) {
   const imageBase64 = document.getElementById('image_base_64');
   const url = imageBase64.getAttribute("url");
@@ -53,6 +47,32 @@ async function swapAndSendImage(roomNo, name) {
   swapImage(roomNo, imgTitle, description)
 }
 
+/**
+ * given the parameters, it swaps the image in the chat for both users
+ * @param roomNo
+ * @param imgTitle
+ * @param description
+ */
+async function swapImage(roomNo, imgTitle, description){
+  const imageBase64 = document.getElementById('image_base_64');
+  let imageForm = document.getElementById('swap-image');
+  const newImage = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+  getCachedData(roomNo).then(data => {
+    data.image = newImage;
+    data.history = [];
+    data.annotations = [];
+    data.title = imgTitle;
+    data.description = description;
+    updateCachedData(data);
+    canvas.updateBackground(newImage.base64);
+    imageForm.style.display = 'none';
+    clearHistory();
+  });
+}
+
+/**
+ *
+ */
 chat.on('sendUrl', function(roomNo, name, title, description, url){
   const imageBase64 = document.getElementById('image_base_64');
   if(url){
@@ -94,7 +114,9 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
     })
   }
 });
-
+/**
+ * validates all the fields in the swap images form
+ */
 function validateSwapForm(){
   let canvas_style = document.getElementById('preview_canvas').style.display;
   let imgTitle = document.getElementById('img_title').value ;

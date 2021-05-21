@@ -1,7 +1,6 @@
 let mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-//The URL which will be queried. Run "mongod.exe" for this to connect
 let mongoDB = 'mongodb://localhost:27017/images';
 
 mongoose.Promise = global.Promise;

@@ -4,8 +4,8 @@ let socket = null;
 let canvas = null;
 let imgTitle = null;
 let description = null;
+let getFromMongo = false;  // indicated whether the existing images have been fetched from MongoDB
 let chat= io.connect('/chat');
-let getFromMongo = false;
 
 /**
  * called by <body onload>
@@ -51,9 +51,7 @@ function init(room, user) {
 }
 
 /**
- * called to generate a random room number
- * This is a simplification. A real world implementation would ask the server to generate a unique room number
- * so to make sure that the room number is not accidentally repeated across uses
+ * Generates a random room number
  */
 function generateRoom() {
   roomNo = Math.round(Math.random() * 10000);
@@ -147,6 +145,7 @@ async function createRoom() {
 
   let img;
   if (document.getElementById('joinRoom').style.display==='none') {
+    // if the room already exist, display warning message
     if (rooms.includes(roomNo)){
       document.getElementById("existing_room").style.display = "block";
     }
@@ -163,15 +162,18 @@ async function createRoom() {
         description: description,
         data: imageBase64.value.split(',')[1]
       }
-      storeCachedData(roomNo, {image, title: imgTitle, description: description}, () => sendImage(img).then(() => location.assign('/chat/'+roomNo+'/'+name)));
+      // saves image in indexedDB and in MongoDB and redirects to chat page
+      storeCachedData(roomNo, {image, title: imgTitle, description: description},
+          () => sendImage(img).then(
+              () => location.assign('/chat/'+roomNo+'/'+name)));
     }
   }
   else {
-
     if (rooms.includes(roomNo)){
       img = null;
       location.assign('/chat/'+roomNo+'/'+name);
     }
+    // if the room doesn't exist, displays the warning message
     else {
       document.getElementById("new_room").style.display = "block";
     }
@@ -180,7 +182,7 @@ async function createRoom() {
 
 /**
  * used to validate whether all required fields are present
- * when user wants to create a new room
+ * called when user wants to create a new room every time he changes the form
  */
 function validateFormCreate() {
   let name = document.getElementById('name').value;
@@ -211,6 +213,9 @@ function validateFormCreate() {
   }
 }
 
+/**
+ * displays appropriate form depending on the activity user wants to perform
+ */
 function validateForm(){
   if (document.getElementById('joinRoom').style.display==='block')
     validateFormJoin();
@@ -220,7 +225,7 @@ function validateForm(){
 
 /**
  * used to validate whether all required fields are present
- * when user wants to join the existing room
+ * called when user wants to join the existing room every time he changes the form
  *
  */
 function validateFormJoin(){
@@ -258,6 +263,7 @@ async function chooseImages(){
   if (!getFromMongo) {
     let images = await getImages();
     let select = document.getElementById("select_img");
+    // disable choice if there are no images in the database
     if (images.length === 0){
       select.style.display = "none";
       document.getElementById("database_images").innerText = "No one uploaded any images yet.";
@@ -328,11 +334,14 @@ function hideLoginInterface(room, userId) {
   }
 }
 
+/**
+ * called when user wants to submit image via url
+ * gets the image, converts it to base64
+ * saves the data and display the image on the preview canvas
+ */
 function submitUrl(){
   const imageBase64 = document.getElementById('image_base_64');
   const imageUrl = document.getElementById('image_url');
-  //console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-
   $.ajax({
     url: imageUrl.value,
     cache: false,
@@ -368,6 +377,10 @@ function showImageUrlInput(){
   imageUrlGroup.style.display = 'flex';
 }
 
+/**
+ * converts file to base64
+ * @param blob
+ */
 function convertToBase64(blob){
   return new Promise(function(resolve, reject){
     const fileReader = new FileReader();

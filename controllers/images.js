@@ -2,8 +2,12 @@ const Image = require('../models/images');
 const fs = require('fs');
 const path = require('path')
 
+/**
+ * converts binary data to base64 encoded string
+ * @param file
+ * @returns {string}
+ */
 function convertToBase64(file){
-  // convert binary data to base64 encoded string
   return 'data:image/jpeg;base64,'+fs.readFileSync(file, 'base64')
 }
 
@@ -26,7 +30,6 @@ exports.insert = function (req, res) {
       url: userData.url
     });
     image.save(function (err, results) {
-      //console.log(results._id);
       if (err)
         res.status(500).send('Invalid data!');
 
@@ -58,7 +61,8 @@ exports.getAll = function (req, res) {
 /**
  * gets the last (most up to date) image saved in a given room,
  * based on the path, gets base64,
- * returns the image data * @param userData room  number
+ * returns all the image data
+ * @param userData - room number
  */
 exports.getByRoom = function (userData, res) {
   try {
@@ -86,8 +90,8 @@ exports.getByRoom = function (userData, res) {
 /**
  * gets the image with a given id
  * based on the path, gets base64,
- * returns the image data
- * @param userData image id
+ * returns all the image data
+ * @param userData - image id
  */
 exports.getById = function (userData, res) {
   try {

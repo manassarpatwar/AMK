@@ -83,12 +83,4 @@ router.get('/chat/:room/:user', function(req, res, next) {
   res.render('chat', { title: 'Chat', room: room, user: user});
 });
 
-/* GET chat page. */
-// router.get('/chat/:room', function(req, res, next) {
-//   var room = req.params.room;
-//   console.log('all');
-//   var user = 'Anonymous' + parseInt((Math.random()*1000),10);
-//   res.render('chat', { room: room, user: user, title: 'Chat'});
-// });
-
 module.exports = router;
