@@ -204,7 +204,7 @@
     },
     "components": {
       "schemas": {
-        "image": {
+        "Image": {
           "type": "object",
           "description": "Saved image json in mongodb",
           "example": "{title: 'image.png', author: 'somename', description: 'some description', base64: 'ni1ugi5oub12....'}"
