@@ -2,6 +2,59 @@
 <html>
     <%- include("head") %>
     <body onload="init()">
-        <%- include("main") %>
+        <div id="wrapper">
+           <%- include("nav") %>
+            <div class="flex" style="text-align: center; margin-top: 40vh;" id="buttons">
+                <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
+                <button type="button" onClick='createRoomShow()' class="btn btn-dark">Create a room</button>
+                <button type="button" onClick='joinRoomShow()' class="btn btn-dark">Join a room</button>
+            </div>
+            <div id='formJoinCreate' style='display: none;'>
+                <div style="display: block; text-align:center; ">
+                    <form id="initial_form" name="initial_form" onsubmit="return false;" onchange="validateForm()">
+                        <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+                        <div class="alert alert-info fixed-top m-2 shadow d-none" role="alert" id="offline_div" style="display: none">You are offline</div>
+                        <div style="display:none;" id='textCreate'>
+                            <h4>CREATE A NEW ROOM</h4>
+                            <p>Please insert your name, picture and the room id. If you do not have a room id, click Generate.</p>
+                        </div>
+                        <div style="display:none;" id='textJoin'>
+                            <h4>JOIN A ROOM</h4>
+                            <p>Please insert the room id and your name.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Your name*</label>
+                            <input name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="checkAnonymous">
+                                <label class="form-check-label" for="checkAnonymous">
+                                    Anonymous
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="room_no">Your room*</label>
+                            <div class="flex">
+                                <input name="room_no" type="text" class="form-control" id="room_no">
+                                <button class="btn btn-dark" id="room_no_generator" onclick="generateRoom()">Generate</button>
+                            </div>
+                            <div id="new_room" style="display: none;">
+                                <small disabled class="form-text text-muted">This room doesn't exist. </small>
+                            </div>
+                        </div>
+                        <div style='display: none;' id='createRoom'>
+                            <%- include("imageForm") %>
+                        </div>
+                        <div style='display: none;' id='joinRoom'>
+                        </div>
+                        <input id="connect_btn" disabled type="submit" class="btn btn-dark" onclick="createRoom()" class="btn btn-primary" value="Connect"/>
+                        <div id="valid_form_help">
+                            <small disabled class="form-text text-muted">You must fill in all the fields.</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

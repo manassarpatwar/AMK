@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('week-3.c-socket.io-chat:server');
 var http = require('http');
+var database= require('../databases/images')
+
 
 /**
  * Get port from environment and store in Express.

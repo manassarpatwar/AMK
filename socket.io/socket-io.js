@@ -21,8 +21,8 @@ exports.init = function(io) {
               socket.to(data.room).emit('draw', data)
           });
 
-          socket.on('sendUrl', function(room, url, name) {
-              socket.to(room).emit('sendUrl', room, url, name)
+          socket.on('sendUrl', function(room, name, imgTitle, description, url) {
+              socket.to(room).emit('sendUrl', room, name, imgTitle, description, url)
           });
 
           socket.on('clear', function(room) {

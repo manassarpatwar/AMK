@@ -1,7 +1,5 @@
 ////////////////// DATABASE //////////////////
 // the database receives from the server the following structure
-import * as idb from './idb/index.js';
-
 let db;
 
 const IMAGE_DB_NAME= 'AMK_DB';
@@ -12,7 +10,7 @@ const IMAGE_STORE_NAME= 'AMK_DB_STORE';
  */
 async function initDatabase(){
     if (!db) {
-        db = await idb.openDB(IMAGE_DB_NAME, 2, {
+        db = await openDB(IMAGE_DB_NAME, 2, {
             upgrade(upgradeDb, oldVersion, newVersion) {
                 if (!upgradeDb.objectStoreNames.contains(IMAGE_STORE_NAME)) {
                     let AMK_DB = upgradeDb.createObjectStore(IMAGE_STORE_NAME, {
