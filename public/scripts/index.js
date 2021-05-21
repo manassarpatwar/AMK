@@ -133,6 +133,12 @@ function connectToRoom(room, user) {
     });
 }
 
+/**
+ * creates a room based on the user data,
+ * saves the data in indexedDB and image in mongoDB
+ * validates whether the room number is valid
+ * id no mistakes found, redirects user to the room
+ */
 async function createRoom() {
     const anonymous = document.getElementById('checkAnonymous');
     // first is saves the images and data in the database and then it moves to different route
@@ -175,7 +181,7 @@ async function createRoom() {
 
 /**
  * used to validate whether all required fields are present
- *
+ * when user wants to create a new room
  */
 function validateFormCreate() {
     let name = document.getElementById('name').value;
@@ -188,7 +194,7 @@ function validateFormCreate() {
         document.getElementById('name').value = "";
     }
 
-    // validate the image name
+    // validate the image name - can't contain any special characters
     let valid_title = true;
     if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
         valid_title = false;
@@ -215,6 +221,7 @@ function validateForm(){
 
 /**
  * used to validate whether all required fields are present
+ * when user wants to join the existing room
  *
  */
 function validateFormJoin(){
@@ -233,8 +240,8 @@ function validateFormJoin(){
 }
 
 /**
- * displays the image chosen from the database
- * @returns {Promise<void>}
+ * saves the image chosen from the database
+ * and displays its preview on canvas
  */
 async function showImage(){
     let select = document.getElementById("select_img");
@@ -246,6 +253,9 @@ async function showImage(){
 
 }
 
+/**
+ * it gets the list of all the images in MongoDB and adds them to the select dropdown menu
+ */
 async function chooseImages(){
     if (!getFromMongo) {
         let images = await getImages();
@@ -264,83 +274,7 @@ async function chooseImages(){
             }
             getFromMongo = true;
         }
-
     }
-}
-
-/**
- * sends post request to save file locally and store the path and the details of
- * the uploaded image in the MongoDB
- *
- */
-function sendImage(imageData) {
-    return new Promise(function(resolve, reject){
-        $.ajax({
-            url: '/save',
-            data: imageData,
-            type: 'POST',
-            success: function (data) {
-                resolve(data)
-                console.log("saved")
-            },
-            error: function (xhr, status, error) {
-                reject({'error': error.message});
-                console.log("failure")
-            }
-        });
-    })
-}
-
-function getImages(){
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            url: '/images',
-            type: 'GET',
-            success: function (data) {
-                resolve(data)
-            },
-            error: function (xhr, status, error) {
-                reject('Error: ' + error.message);
-            }
-        });
-    });
-}
-
-function getImage(param, byId=false){
-    let url = "";
-    if (!byId){
-        url = '/imageByRoom/'+ param
-    }
-    else
-        url = '/imageById/'+ param
-    return new Promise(function(resolve, reject){
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function (data) {
-                resolve(data)
-            },
-            error: function (xhr, status, error) {
-                reject({'error: ': error.message});
-            }
-        });
-    })
-}
-
-
-function getRooms(){
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            url: '/rooms',
-            type: 'GET',
-            success: function (data) {
-                resolve(data);
-            },
-            error: function (xhr, status, error) {
-                reject('Error: ' + error.message);
-            }
-        });
-    });
 }
 
 /**

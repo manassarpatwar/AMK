@@ -25,13 +25,17 @@
             </div>
                 <div id="input_wrapper">
                     <div id="input" class="boxed">
-                        <form id="chat_form" onsubmit="return false;">
+                        <form id="chat_form" onsubmit="return false;" onchange="validateSwapForm()">
                             <div id="swap-image" style="display: none; margin-right: 25px;">
                                 <%- include("imageForm") %>
                                 <div class="input-group-append">
                                     <br>
-                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
+                                    <input class="btn btn-outline-secondary" id="submitSwapped" disabled = "true" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
                                 </div>
+                                <div id="valid_form_help">
+                                    <small disabled class="form-text text-muted">You must fill in all the fields.</small>
+                                </div>
+
                             </div>
                             <div class="input-group mb-3" style="padding-right: 20px;">
                                 <button class="input-group-text button" onclick="inputImage()">

@@ -97,3 +97,29 @@ chat.on('sendUrl', function(roomNo, name, title, description, url){
         })
     }
 });
+
+function validateSwapForm(){
+    let canvas_style = document.getElementById('preview_canvas').style.display;
+    let imgTitle = document.getElementById('img_title').value ;
+    let description = document.getElementById('description').value;
+
+
+    // validate the image name - can't contain any special characters
+    let valid_title = true;
+    if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
+        valid_title = false;
+
+    if (canvas_style === "none" || !valid_title || description === "") {
+        document.getElementById("submitSwapped").disabled = true;
+        document.getElementById("valid_form_help").style.display = "block";
+        if (!valid_title)
+            document.getElementById("valid_form_image_name").style.display = "block";
+        else
+            document.getElementById("valid_form_image_name").style.display = "none";
+    }
+    else{
+        document.getElementById("submitSwapped").disabled = false;
+        document.getElementById("valid_form_help").style.display = "none";
+        document.getElementById("valid_form_image_name").style.display = "none";
+    }
+}

@@ -34,32 +34,32 @@ router.post('/save', function(req, res, next) {
     description: req.body.description,
     url: directPath
   }
-  // console.log(req.body);
   image.insert(img, res);
 });
 
-/* GET all images from the database*/
+/* GET all images from the database */
 router.get('/images', function(req, res, next) {
   image.getAll(req, res);
 });
 
+/* GET first image from the database from the given room */
 router.get('/imageByRoom/:roomNo', function(req, res, next) {
   let data = {roomNo: req.params.roomNo};
   image.getByRoom(data, res);
 });
 
-
+/* GET image from the database with given id */
 router.get('/imageById/:id', function(req, res, next) {
   let data = {_id: req.params.id};
   image.getById(data, res);
 });
 
-/* GET all the rooms*/
+/* GET all the rooms */
 router.get('/rooms', function(req, res, next) {
   image.getRooms(req, res);
 });
 
-/* GET chat page. */
+/* GET chat page */
 router.get('/chat/:room/:user', function(req, res, next) {
   let room = req.params.room;
   let user = req.params.user;
