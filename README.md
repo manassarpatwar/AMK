@@ -32,6 +32,9 @@ To run this project
 npm start
 ```
 
+## Acknowledgment 
+The  following code has been based on the code developed by Prof. Fabio Ciravegna as part of COM3504 Intelligent Web.
+
 
    [nodeJS]: <http://nodejs.org>
    [Bootstrap]: <https://getbootstrap.com/>
