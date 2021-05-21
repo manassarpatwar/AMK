@@ -81,6 +81,31 @@ exports.getByRoom = function (userData, res) {
     }
 }
 
+exports.getById = function (userData, res) {
+    try {
+        Image.find({_id: userData._id},
+            'roomNo title author description url',
+            function (err, images) {
+                if (err)
+                    res.status(500).send('Invalid data!');
+
+                const image = images[0];
+                const url = path.resolve(__dirname, '..'+image['url']);
+
+                const base64 = convertToBase64(url)
+                const imageData = {}
+                imageData['title'] = image['title']
+                imageData['author'] = image['author']
+                imageData['description'] = image['description']
+                imageData['base64'] = base64
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(imageData));
+            });
+    } catch (e) {
+        res.status(500).send('error '+ e);
+    }
+}
+
 exports.getRooms = function (req, res) {
     try {
         Image.find({},

@@ -6,6 +6,7 @@ let canvas = null;
 let imgTitle = null;
 let description = null;
 let chat= io.connect('/chat');
+let getFromMongo = false;
 
 /**
  * called by <body onload>
@@ -232,6 +233,42 @@ function validateFormJoin(){
 }
 
 /**
+ * displays the image chosen from the database
+ * @returns {Promise<void>}
+ */
+async function showImage(){
+    let select = document.getElementById("select_img");
+    let id= select.value;
+    let image = await getImage(id, true);
+    const imageBase64 = document.getElementById('image_base_64');
+    imageBase64.value = image.base64;
+    preview(image.base64);
+
+}
+
+async function chooseImages(){
+    if (!getFromMongo) {
+        let images = await getImages();
+        let select = document.getElementById("select_img");
+        if (images.length === 0){
+            select.style.display = "none";
+            document.getElementById("database_images").innerText = "No one uploaded any images yet.";
+            document.getElementById("submit_image").disabled = true;
+        }
+        else {
+            for (let img of images) {
+                let option = document.createElement("option");
+                option.text = img["title"];
+                option.value = img["_id"];
+                select.appendChild(option);
+            }
+            getFromMongo = true;
+        }
+
+    }
+}
+
+/**
  * sends post request to save file locally and store the path and the details of
  * the uploaded image in the MongoDB
  *
@@ -258,8 +295,6 @@ function getImages(){
     return new Promise(function(resolve, reject) {
         $.ajax({
             url: '/images',
-            data: '',
-            dataType: 'json',
             type: 'GET',
             success: function (data) {
                 resolve(data)
@@ -271,10 +306,16 @@ function getImages(){
     });
 }
 
-function getImage(room){
+function getImage(param, byId=false){
+    let url = "";
+    if (!byId){
+        url = '/imageByRoom/'+ param
+    }
+    else
+        url = '/imageById/'+ param
     return new Promise(function(resolve, reject){
         $.ajax({
-            url: '/image/'+room,
+            url: url,
             type: 'GET',
             success: function (data) {
                 resolve(data)
@@ -285,6 +326,7 @@ function getImage(room){
         });
     })
 }
+
 
 function getRooms(){
     return new Promise(function(resolve, reject) {

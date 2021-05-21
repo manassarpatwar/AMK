@@ -43,9 +43,15 @@ router.get('/images', function(req, res, next) {
   image.getAll(req, res);
 });
 
-router.get('/image/:roomNo', function(req, res, next) {
+router.get('/imageByRoom/:roomNo', function(req, res, next) {
   let data = {roomNo: req.params.roomNo};
   image.getByRoom(data, res);
+});
+
+
+router.get('/imageById/:id', function(req, res, next) {
+  let data = {_id: req.params.id};
+  image.getById(data, res);
 });
 
 /* GET all the rooms*/
@@ -61,11 +67,11 @@ router.get('/chat/:room/:user', function(req, res, next) {
 });
 
 /* GET chat page. */
-router.get('/chat/:room', function(req, res, next) {
-  var room = req.params.room;
-  console.log('all');
-  var user = 'Anonymous' + parseInt((Math.random()*1000),10);
-  res.render('chat', { room: room, user: user, title: 'Chat'});
-});
+// router.get('/chat/:room', function(req, res, next) {
+//   var room = req.params.room;
+//   console.log('all');
+//   var user = 'Anonymous' + parseInt((Math.random()*1000),10);
+//   res.render('chat', { room: room, user: user, title: 'Chat'});
+// });
 
 module.exports = router;

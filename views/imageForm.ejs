@@ -7,7 +7,7 @@
         </label>
         <button id="take_picture" class="btn btn-dark mb-2" style='margin: 0; display: inline-block;'>Take Picture</button>
         <button id="capture" class="btn btn-dark mb-2" style='margin: 0; display: none;'>Capture</button>
-        <button id="choose_picture" class="btn btn-dark mb-2" onclick="getImages()" style='margin: 0; display: inline-block; '>Select from database</button>
+        <button id="choose_picture" class="btn btn-dark mb-2" onclick="chooseImages()" style='margin: 0; display: inline-block; ' data-toggle="modal" data-target="#exampleModal">Select from database</button>
         <div id="image_url_group" style="display: none;">
             <input type="text" class="form-control" id="image_url" name="image_url">
             <span class="input-group-text addon-wrapping p-0">
@@ -35,4 +35,25 @@
 </div>
 <div id="existing_room" style="display: none;">
     <small disabled class="form-text text-muted">This room already exists, please use different name. </small>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Select image by title:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="database_images">
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="select_img">
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="submit_image" class="btn btn-primary" onclick="showImage()" data-dismiss="modal"  >Choose photo</button>
+            </div>
+        </div>
+    </div>
 </div>

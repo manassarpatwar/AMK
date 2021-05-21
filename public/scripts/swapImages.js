@@ -1,4 +1,6 @@
 function inputImage(){
+    // inserting from database only in the main page
+    document.getElementById("choose_picture").style.display = "none";
     const inputWrapper= document.getElementById('input_wrapper');
     const imageForm = document.getElementById('swap-image');
     if (imageForm.style.display !== 'none') {
