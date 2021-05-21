@@ -3,9 +3,10 @@ let name = null;
 let roomNo = null;
 let socket = null;
 let canvas = null;
-let img_title = null;
+let imgTitle = null;
 let description = null;
 let chat= io.connect('/chat');
+let getFromMongo = false;
 
 const service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 const apiKey= 'AIzaSyAG7w627q-djB4gTTahssufwNOImRqdYKM';
@@ -63,7 +64,6 @@ function init(room, user) {
 function generateRoom() {
     roomNo = Math.round(Math.random() * 10000);
     document.getElementById('room_no').value = 'R' + roomNo;
-    validateForm()
 }
 
 /**
@@ -127,44 +127,67 @@ function connectToRoom(room, user) {
             cachedData = {};
             storeCachedData(roomNo, cachedData)
         }
-        const base64 = cachedData.image ? cachedData.image.base64 : null;
-        canvas = new Canvas(chat, base64, roomNo);
+        if(cachedData.image){
+            canvas = new Canvas(chat, cachedData.image.base64, roomNo);
+        }else{
+            getImage(room).then(function(data){
+                canvas = new Canvas(chat, data['base64'], roomNo);
+                console.log("hello")
+            })
+        }
     });
 }
 
-function createRoom() {
+async function createRoom() {
     const anonymous = document.getElementById('checkAnonymous');
     // first is saves the images and data in the database and then it moves to different route
     roomNo = document.getElementById('room_no').value;
     name = document.getElementById('name').value;
-    img_title = document.getElementById('img_title').value + ".png";
-    description = document.getElementById('description').value;
-    if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random()*1000),10);
-    const imageBase64 = document.getElementById('image_base_64');
-    const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+    let rooms = await getRooms();
 
-    let img = {
-        roomNo: roomNo,
-        title: img_title,
-        author: name,
-        description: description,
-        data: imageBase64.value.split(',')[1]
+    let img;
+    if (document.getElementById('joinRoom').style.display==='none') {
+        if (rooms.includes(roomNo)){
+            document.getElementById("existing_room").style.display = "block";
+        }
+        else {
+            imgTitle = document.getElementById('img_title').value;
+            description = document.getElementById('description').value;
+            if (!(name) && anonymous.checked) name = 'Anonymous' + parseInt((Math.random() * 1000), 10);
+            const imageBase64 = document.getElementById('image_base_64');
+            const image = {url: imageBase64.getAttribute("url"), base64: imageBase64.value};
+            img = {
+                roomNo: roomNo,
+                title: imgTitle,
+                author: name,
+                description: description,
+                data: imageBase64.value.split(',')[1]
+            }
+            storeCachedData(roomNo, {image, title: imgTitle, description: description}, () => sendImage(img).then(() => location.assign('/chat/'+roomNo+'/'+name)));
+        }
     }
+    else {
 
-    storeCachedData(roomNo, {image}, () => sendAjaxQuery('/save', img, roomNo, name));
-
+        if (rooms.includes(roomNo)){
+            img = null;
+            location.assign('/chat/'+roomNo+'/'+name);
+        }
+        else {
+            document.getElementById("new_room").style.display = "block";
+        }
+    }
 }
 
 /**
- * used to validate whether all required fields are present (user and room number)
+ * used to validate whether all required fields are present
  *
  */
-function validateForm() {
+function validateFormCreate() {
     let name = document.getElementById('name').value;
     let roomNo= document.getElementById('room_no').value
     const anonymous = document.getElementById('checkAnonymous');
     let canvas_style = document.getElementById('preview_canvas').style.display;
-    let img_title = document.getElementById('img_title').value ;
+    let imgTitle = document.getElementById('img_title').value ;
     let description = document.getElementById('description').value;
     if (anonymous.checked){
         document.getElementById('name').value = "";
@@ -172,16 +195,14 @@ function validateForm() {
 
     // validate the image name
     let valid_title = true;
-    if (img_title === "" || (/[<">\/*?:|]+/.test(img_title)))
+    if (imgTitle === "" || (/[<">\/*?:|]+/.test(imgTitle)))
         valid_title = false;
-
 
     if (roomNo  === "" || (name === "" && !anonymous.checked) || canvas_style === "none" || !valid_title || description === "") {
         document.getElementById("connect_btn").disabled = true;
         document.getElementById("valid_form_help").style.display = "block";
         if (!valid_title)
             document.getElementById("valid_form_image_name").style.display = "block";
-
     }
     else{
         document.getElementById("connect_btn").disabled = false;
@@ -190,45 +211,140 @@ function validateForm() {
     }
 }
 
+function validateForm(){
+    if (document.getElementById('joinRoom').style.display==='block')
+        validateFormJoin();
+    else if (document.getElementById('joinRoom').style.display==='none')
+        validateFormCreate();
+}
+
+/**
+ * used to validate whether all required fields are present
+ *
+ */
+function validateFormJoin(){
+    let name = document.getElementById('name').value;
+    let roomNo= document.getElementById('room_no').value
+    const anonymous = document.getElementById('checkAnonymous');
+    if (anonymous.checked){
+        document.getElementById('name').value = "";
+    }
+    if (roomNo  === "" || (name === "" && !anonymous.checked)) {
+        document.getElementById("connect_btn").disabled = true;
+    }
+    else {
+        document.getElementById("connect_btn").disabled = false;
+    }
+}
+
+/**
+ * displays the image chosen from the database
+ * @returns {Promise<void>}
+ */
+async function showImage(){
+    let select = document.getElementById("select_img");
+    let id= select.value;
+    let image = await getImage(id, true);
+    const imageBase64 = document.getElementById('image_base_64');
+    imageBase64.value = image.base64;
+    preview(image.base64);
+
+}
+
+async function chooseImages(){
+    if (!getFromMongo) {
+        let images = await getImages();
+        let select = document.getElementById("select_img");
+        if (images.length === 0){
+            select.style.display = "none";
+            document.getElementById("database_images").innerText = "No one uploaded any images yet.";
+            document.getElementById("submit_image").disabled = true;
+        }
+        else {
+            for (let img of images) {
+                let option = document.createElement("option");
+                option.text = img["title"];
+                option.value = img["_id"];
+                select.appendChild(option);
+            }
+            getFromMongo = true;
+        }
+
+    }
+}
+
 /**
  * sends post request to save file locally and store the path and the details of
  * the uploaded image in the MongoDB
  *
  */
-function sendAjaxQuery(url, data, room, name) {
-    console.log("send")
-    $.ajax({
-        url: url ,
-        data: data,
-        dataType: 'json',
-        type: 'POST',
-        success: function (dataR) {
-            let ret = dataR;
-            console.log(ret);
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
-
-    });
-    location.assign('/chat/'+room+'/'+name);
+function sendImage(imageData) {
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            url: '/save',
+            data: imageData,
+            type: 'POST',
+            success: function (data) {
+                resolve(data)
+                console.log("saved")
+            },
+            error: function (xhr, status, error) {
+                reject({'error': error.message});
+                console.log("failure")
+            }
+        });
+    })
 }
 
 function getImages(){
-    $.ajax({
-        url: '/get_images' ,
-        data: '',
-        dataType: 'json',
-        type: 'GET',
-        success: function (dataR) {
-            // @todo display all the images on the main page
-            let ret = dataR;
-            console.log(ret);
-        },
-        error: function (xhr, status, error) {
-            alert('Error: ' + error.message);
-        }
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: '/images',
+            type: 'GET',
+            success: function (data) {
+                resolve(data)
+            },
+            error: function (xhr, status, error) {
+                reject('Error: ' + error.message);
+            }
+        });
+    });
+}
 
+function getImage(param, byId=false){
+    let url = "";
+    if (!byId){
+        url = '/imageByRoom/'+ param
+    }
+    else
+        url = '/imageById/'+ param
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                resolve(data)
+            },
+            error: function (xhr, status, error) {
+                reject({'error: ': error.message});
+            }
+        });
+    })
+}
+
+
+function getRooms(){
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: '/rooms',
+            type: 'GET',
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (xhr, status, error) {
+                reject('Error: ' + error.message);
+            }
+        });
     });
 }
 
@@ -288,9 +404,8 @@ function hideLoginInterface(room, userId) {
 function submitUrl(){
     const imageBase64 = document.getElementById('image_base_64');
     const imageUrl = document.getElementById('image_url');
-    console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
-  
-    
+    //console.log(imageUrl.textContent, imageUrl.innerText, imageUrl.value);
+
     $.ajax({
         url: imageUrl.value,
         cache: false,
@@ -300,7 +415,6 @@ function submitUrl(){
         success: function(blob){
             convertToBase64(blob).then(data => {
                 const base64 = data.result;
-                console.log(base64);
                 imageBase64.value = base64;
                 imageBase64.setAttribute("url", imageUrl.value);
                 preview(base64);
@@ -355,6 +469,22 @@ window.addEventListener('online', function(e) {
     // Resync data with server.
     console.log("You are online");
     hideOfflineWarning();
+    const imageBase64 = document.getElementById('image_base_64');
+
+    getCachedData(roomNo).then(cachedData => {
+        if(cachedData){
+            const title = cachedData.title
+            const description = cachedData.description
+            let img = {
+                roomNo: roomNo,
+                title: title,
+                author: name,
+                description: description,
+                data: imageBase64.value.split(',')[1]
+            }
+            sendImage(img)
+        }
+    });
 }, false);
 
 
@@ -366,6 +496,30 @@ function showOfflineWarning(){
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
+}
+
+function createRoomShow(){
+    document.getElementById('formJoinCreate').style.display='block';
+    document.getElementById('createRoom').style.display='block';
+    document.getElementById('joinRoom').style.display='none';
+    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('textJoin').style.display='none';
+    document.getElementById('textCreate').style.display='block';
+    document.getElementById('room_no_generator').style.display = 'inline-block';
+    document.getElementById('room_no').style.maxWidth = 'calc(100% - 95px)';
+    window.scrollTo(0,0);
+}
+
+function joinRoomShow(){
+    document.getElementById('textJoin').style.display='block';
+    document.getElementById('textCreate').style.display='none';
+    document.getElementById('formJoinCreate').style.display='block';
+    document.getElementById('createRoom').style.display='none';
+    document.getElementById('joinRoom').style.display='block';
+    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('room_no_generator').style.display = 'none';
+    document.getElementById('room_no').style.maxWidth = 'none';
+    window.scrollTo(0,0);
 }
 
 
@@ -388,6 +542,7 @@ function widgetInit(){
         document.getElementById('typeSet').innerHTML= 'of type: '+type;
         document.getElementById('widget').style.display='block';
         document.getElementById('typeForm').style.display= 'none';
+        document.getElementById('adjustType').style.display='block';
     }
     else {
         alert('Set the type please');
@@ -397,7 +552,14 @@ function widgetInit(){
         document.getElementById('typeForm').style.display= 'block';
     }
 }
-
+function adjustType(){
+    document.getElementById("myType").value = "";
+    document.getElementById("myInput").value = ""
+    document.getElementById('widget').style.display='none';
+    document.getElementById('typeSet').innerHTML= '';
+    document.getElementById('typeForm').style.display= 'block';
+    document.getElementById('adjustType').style.display='none';
+}
 /**
  * callback called when an element in the widget is selected
  * @param event the Google Graph widget event {@link https://developers.google.com/knowledge-graph/how-tos/search-widget}
@@ -408,17 +570,20 @@ function selectItem(event){
     // document.getElementById('resultImage').src= row.json.image.url;
     let results = document.getElementById('resultPanel');
     let result = document.createElement('div');
+    result.className = "knowledgeGraphResult"
 
     let name = document.createElement('h4');
     name.innerText = row.name;
+    name.style.textAlign = "center";
     result.appendChild(name);
 
     let description = document.createElement('p');
     description.innerText = row.rc;
+    description.style.textAlign = "justify";
     result.appendChild(description);
 
     let link = document.createElement("a");
-    link.innerText = "see more..."
+    link.innerText = "See more..."
     link.href = row.qc;
     result.appendChild(link);
 

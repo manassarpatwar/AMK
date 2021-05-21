@@ -3,39 +3,37 @@
     <%- include("head") %>
     <body onload="init('<%= room %>','<%= user %>');">
         <div id="wrapper">
-            <div class="nav_bar">
-                <div id="title"><h1>AMK Chat</h1></div>
-            </div>
+            <%- include("nav") %>
             <div id="swap_alert" class="alert alert-info fixed-top m-2 shadow d-none" role="alert">
-                The image was swapped by <span id = "swapper_name"></span>
+                The current image was swapped by <span id = "swapper_name"></span> with <span id = "swapper_title"></span> : <span id = "swapper_description"></span>
                 <button id="close_swap_alert" type="button" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div id="chat_interface" style="display: block">
-            <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
-            <div id="drawing_board" style="width: 60%;">
-                <!--Regulate the size of the image below-->
-                <img id="image" width="50%">
-                <canvas  id="canvas"></canvas>
-            </div>
-                <div>
-
+                <div id="drawing_board" style="width: 60%;">
+                    <!--Regulate the size of the image below-->
+                    <img id="image" width="40%">
+                    <canvas  id="canvas"></canvas>
                 </div>
             <div class="boxed" >
-                <div>
-                    <p>
-                        <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
-                    </p>
-                </div>
+                <div id="who_you_are" style="display: inline" style="height: 10vh"><%= user %></div>, you are in room: <div id="in_room" style="display: inline"><%= room %></div>
+                <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
                 <div id="history" class="container">
                     <br/>
                 </div>
             </div>
                 <div id="input_wrapper">
                     <div id="input" class="boxed">
-                        <form id="chat_form" onsubmit="return false;" style="width: 100%">
-                            <div class="input-group mb-3">
+                        <form id="chat_form" onsubmit="return false;">
+                            <div id="swap-image" style="display: none; margin-right: 25px;">
+                                <%- include("imageForm") %>
+                                <div class="input-group-append">
+                                    <br>
+                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3" style="padding-right: 20px;">
                                 <button class="input-group-text button" onclick="inputImage()">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
                                         <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
@@ -53,30 +51,26 @@
                                     <input class="btn btn-outline-secondary" type="submit" id="chat_send" onclick="sendChatText()" onkeypress="pressed(event)" value="Send"/>
                                 </div>
                             </div>
-                            <div id="swap-image" style="display: none;">
-                                <%- include("imageForm") %>
-                                <div class="input-group-append">
-                                    <br>
-                                    <input class="btn btn-outline-secondary" type="submit" value="Swap Pictures" onclick="swapAndSendImage('<%= room %>','<%= user %>')" style="float: right;"/>
-                                </div>
-                            </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <h2>Add Knowledge Graph annotation: </h2>
-            <div class="myRow" id="typeForm">
-                <label for="myType">Type: </label><input type="text" id="myType">
-                <button onclick="widgetInit()">Set type</button>
-            </div>
-            <div class="myRow" id='widget' style="display: none">
-                <label for="myInput">Search for: </label><input type="text" id="myInput">
-                <div class="myRow" id="typeSet"></div>
-            </div>
-            <div>
-                <div class='resultPanel' id="resultPanel">
-                    <h3> Knowledge Graph annotations: </h3>
+            <div id="knowledgeGraph">
+                <h2>Add Knowledge Graph annotation: </h2>
+                <div class="myRow" id="typeForm">
+                    <label for="myType">Type: </label><input type="text" id="myType">
+                    <button onclick="widgetInit()">Set type</button>
+                </div>
+                <div class="myRow" id='widget' style="display: none">
+                    <label for="myInput">Search for: </label><input type="text" id="myInput">
+                    <p class="myRow" id="typeSet"></p>
+                </div>
+                <button onclick="adjustType()" id="adjustType" style="display: none;">Change type</button>
+                <div>
+                    <div class='resultPanel' id="resultPanel">
+                        <h3 id=""> Knowledge Graph annotations: </h3>
 
+                    </div>
                 </div>
             </div>
         </div>

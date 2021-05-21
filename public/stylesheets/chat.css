@@ -2,7 +2,9 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
-
+#chat_send{
+    background-color: white;
+}
 .boxed {
     padding:10px;
     box-sizing: border-box;
@@ -24,7 +26,9 @@
 }
 
 #input_wrapper{
-    width: 100%;
+    width: 80%;
+    position: fixed;
+    bottom: 0;
 }
 
 #input{
@@ -37,11 +41,27 @@
     z-index: 100;
     max-height: 10vh;
 }
-
+#chat_form{
+    position: fixed;
+    bottom: 0;
+}
 #swap-image{
     padding-bottom: 3%;
+    background-color: white;
+    padding: 5%;
 }
 
-/*.kge-search-picker {*/
-/*     width: <DROPDOWN_MENU_WIDTH>;*/
-/* }*/
+.knowledgeGraphResult{
+    border: 2px solid black;
+    padding: 10px;
+    margin: 10px;
+}
+
+#knowledgeGraph {
+    margin-top: 20px;
+}
+@media only screen and (max-width: 600px) {
+    #drawing_board{
+        width:100%
+    }
+}

@@ -1,14 +1,14 @@
 <div class="form-group">
-    <label for="image_url_value"> Add image </label>
+    <label for="image_url_value"> Add your image </label>
     <div id='image-form'>
-        <button id="enter_url" class="btn btn-dark mb-2" style='display: inline-block;' onclick="showImageUrlInput()">URL</button>
-        <label class = "image-file-label btn btn-dark">
-            Browse <input type="file" accept="image/*" id="file_input" capture="environment" style='display: none;'>
+        <button id="enter_url" class="btn btn-dark mb-2" style='display: inline-block; margin: 0;' onclick="showImageUrlInput()">URL</button>
+        <label class = "image-file-label btn btn-dark" style="margin: 0; margin-bottom: .5rem!important;">
+            File <input type="file" accept="image/*" id="file_input" capture="environment" style='margin: 0; display: none;'>
         </label>
-        <button id="take_picture" class="btn btn-dark mb-2" style='display: inline-block;'>Take Picture</button>
-        <button id="capture" class="btn btn-dark mb-2" style='display: none;'>Capture</button>
-        <button id="choose_picture" class="btn btn-dark mb-2" onclick="getImages()" style='display: inline-block; '>Select from database</button>
-        <div id="image_url_group" style="display: none; width: 50%;">
+        <button id="take_picture" class="btn btn-dark mb-2" style='margin: 0; display: inline-block;'>Take Picture</button>
+        <button id="capture" class="btn btn-dark mb-2" style='margin: 0; display: none;'>Capture</button>
+        <button id="choose_picture" class="btn btn-dark mb-2" onclick="chooseImages()" style='margin: 0; display: inline-block; ' data-toggle="modal" data-target="#exampleModal">Select from database</button>
+        <div id="image_url_group" style="display: none;">
             <input type="text" class="form-control" id="image_url" name="image_url">
             <span class="input-group-text addon-wrapping p-0">
                 <button class="btn btn-dark p-1" id="submit_image_url" onclick="submitUrl()">
@@ -21,4 +21,39 @@
         <canvas id="preview_canvas" width=320 height=240 style='display: none;'></canvas>
     </div>
     <input type="text" url="" class="form-control" id="image_base_64" name="image_base_64" style='display: none;'>
+</div>
+<div class="form-group">
+    <label for="img_title">Title of your image*</label>
+    <input name="img_title" type="text" class="form-control" id="img_title" aria-describedby="nameHelp" placeholder="">
+</div>
+<div class="form-group">
+    <label for="description">What does your image show?*</label>
+    <input name="description" type="text" class="form-control" id="description" aria-describedby="nameHelp" placeholder="">
+</div>
+<div id="valid_form_image_name" style="display: none;">
+    <small disabled class="form-text text-muted">The image name cannot contain: <">\/*?:|.</small>
+</div>
+<div id="existing_room" style="display: none;">
+    <small disabled class="form-text text-muted">This room already exists, please use different name. </small>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Select image by title:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="database_images">
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="select_img">
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="submit_image" class="btn btn-primary" onclick="showImage()" data-dismiss="modal"  >Choose photo</button>
+            </div>
+        </div>
+    </div>
 </div>
