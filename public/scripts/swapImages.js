@@ -39,11 +39,11 @@ function closeModal(){
 }
 
 async function swapAndSendImage(roomNo, name) {
-    closeModal();
     const imageBase64 = document.getElementById('image_base_64');
     const url = imageBase64.getAttribute("url");
     const imgTitle = document.getElementById('img_title').value;
     const description = document.getElementById('description').value;
+    closeModal();
 
     let img = {
         roomNo: roomNo,

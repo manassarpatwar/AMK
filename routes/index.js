@@ -21,7 +21,7 @@ router.post('/save', function(req, res, next) {
   if (!fs.existsSync(dirPath)){
     fs.mkdirSync(dirPath);
   }
-  let directPath = "/private_access/images/" + req.body.roomNo+'.png';
+  let directPath = "/private_access/images/" + req.body.title + "_" + req.body.roomNo + '.png';
   let imagePath = parent + directPath;
   fs.writeFile(imagePath, req.body.data, 'base64', err => {
     console.log(err);
@@ -42,7 +42,7 @@ router.get('/images', function(req, res, next) {
   image.getAll(req, res);
 });
 
-/* GET first image from the database from the given room */
+/* GET the last image from the database from the given room */
 router.get('/imageByRoom/:roomNo', function(req, res, next) {
   let data = {roomNo: req.params.roomNo};
   image.getByRoom(data, res);

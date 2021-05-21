@@ -62,7 +62,7 @@ exports.getAll = function (req, res) {
 }
 
 /**
- * gets the first image saved in a given room,
+ * gets the last (most up to date) image saved in a given room,
  * based on the path, gets base64,
  * returns the image data * @param userData room  number
  */
@@ -74,9 +74,11 @@ exports.getByRoom = function (userData, res) {
                 if (err)
                     res.status(500).send('Invalid data!');
 
-                const image = images[0];
-                const url = path.resolve(__dirname, '..'+image['url']);
+                let image = []
+                if (images.length >= 1)
+                    image = images[images.length - 1];
 
+                const url = path.resolve(__dirname, '..'+image['url']);
                 const base64 = convertToBase64(url)
                 const imageData = {}
                 imageData['title'] = image['title']
