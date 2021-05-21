@@ -52,7 +52,7 @@
           }
         }
       },
-      "/imageById/:id": {
+      "/imageById/{id}": {
         "get": {
           "parameters": [
             {
@@ -99,7 +99,7 @@
           }
         }
       },
-      "/imageByRoom/:roomNo": {
+      "/imageByRoom/{roomNo}": {
         "get": {
           "parameters": [
             {
@@ -118,16 +118,6 @@
           ],
           "description": "getting image by room number - Get image by roomNo saved in mongoDB",
           "operationId": "imageById",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Image"
-                }
-              }
-            },
-            "required": true
-          },
           "responses": {
             "200": {
               "description": "Correct Image room number provided",
@@ -163,16 +153,6 @@
           ],
           "description": "getting all images - Get all images saved in mongoDB",
           "operationId": "allImages",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImageUrl"
-                }
-              }
-            },
-            "required": true
-          },
           "responses": {
             "200": {
               "description": "Get request successful",
